@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Parvoz - Buyurtmalar{% endblock %}
+{% block page_id %}orders{% endblock %}
+
+{% block content %}
+<header class="page-head">
+    <div>
+        <p class="eyebrow">Ofitsiant paneli</p>
+        <h1 class="page-title">Buyurtmalar</h1>
+    </div>
+</header>
+
+<div class="pill-row">
+    <button class="pill active" type="button" data-order-filter="all">Barchasi</button>
+    <button class="pill" type="button" data-order-filter="new">Yangi</button>
+    <button class="pill" type="button" data-order-filter="preparing">Tayyorlanmoqda</button>
+    <button class="pill" type="button" data-order-filter="ready">Tayyor</button>
+    <button class="pill" type="button" data-order-filter="served">Yetkazildi</button>
+</div>
+
+<section class="orders-grid">
+    {% for order in orders %}
+        <article class="order-card" data-order-status="{{ order.status|default:'new' }}">
+            <div class="order-top">
+                <h2 class="order-title">#{{ order.id|default:forloop.counter }}</h2>
+                <span class="status">{{ order.get_status_display|default:order.status|default:"Yangi" }}</span>
+            </div>
+            <p class="meta">Stol {{ order.table.number|default:order.table_number|default:"-" }} | {{ order.created_at|time:"H:i" }}</p>
+            <ul class="item-list">
+                {% for item in order.items.all %}
+                    <li><span>{{ item.dish.name|default:item.name }}</span><strong>{{ item.quantity }}x</strong></li>
+                {% empty %}
+                    <li><span>Taomlar ro'yxati</span><strong>-</strong></li>
+                {% endfor %}
+            </ul>
+            <div class="cart-total"><span>Jami</span><strong class="price">{{ order.total_price|default:"0" }} so'm</strong></div>
+            <div class="actions" style="margin-top:14px">
+                <button class="btn btn-primary full" type="button">Yetkazildi</button>
+            </div>
+        </article>
+    {% empty %}
+        <article class="order-card" data-order-status="new">
+            <div class="order-top">
+                <h2 class="order-title">#1024</h2>
+                <span class="status">Yangi</span>
+            </div>
+            <p class="meta">Stol 7 | 14:25</p>
+            <ul class="item-list">
+                <li><span>Osh</span><strong>2x</strong></li>
+                <li><span>Achchiq-chuchuk</span><strong>1x</strong></li>
+                <li><span>Ko'k choy</span><strong>1x</strong></li>
+            </ul>
+            <div class="cart-total"><span>Jami</span><strong class="price">116 000 so'm</strong></div>
+            <div class="actions" style="margin-top:14px">
+                <button class="btn btn-primary full" type="button">Yetkazildi</button>
+            </div>
+        </article>
+        <article class="order-card" data-order-status="preparing">
+            <div class="order-top">
+                <h2 class="order-title">#1025</h2>
+                <span class="status">Tayyorlanmoqda</span>
+            </div>
+            <p class="meta">Stol 12 | 14:31</p>
+            <ul class="item-list">
+                <li><span>Shashlik assorti</span><strong>1x</strong></li>
+                <li><span>Non</span><strong>2x</strong></li>
+                <li><span>Moxito</span><strong>2x</strong></li>
+            </ul>
+            <div class="cart-total"><span>Jami</span><strong class="price">120 000 so'm</strong></div>
+            <div class="actions" style="margin-top:14px">
+                <button class="btn btn-primary full" type="button">Yetkazildi</button>
+            </div>
+        </article>
+        <article class="order-card" data-order-status="ready">
+            <div class="order-top">
+                <h2 class="order-title">#1026</h2>
+                <span class="status">Tayyor</span>
+            </div>
+            <p class="meta">Stol 4 | 14:37</p>
+            <ul class="item-list">
+                <li><span>Mol go'shtli lag'mon</span><strong>2x</strong></li>
+                <li><span>Choy</span><strong>1x</strong></li>
+            </ul>
+            <div class="cart-total"><span>Jami</span><strong class="price">84 000 so'm</strong></div>
+            <div class="actions" style="margin-top:14px">
+                <button class="btn btn-primary full" type="button">Yetkazildi</button>
+            </div>
+        </article>
+    {% endfor %}
+</section>
+{% endblock %}

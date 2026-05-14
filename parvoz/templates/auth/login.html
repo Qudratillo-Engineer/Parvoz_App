@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Parvoz - Kirish{% endblock %}
+{% block page_id %}login{% endblock %}
+
+{% block content %}
+<script>document.body.classList.add("auth-body");</script>
+<section class="card login-card">
+    <h1 class="login-logo">PARVOZ</h1>
+    <p class="login-subtitle">Restoran ichki boshqaruv tizimi</p>
+
+    {% if form.errors %}
+        <div class="form-error">Login yoki parol noto'g'ri kiritildi.</div>
+    {% endif %}
+
+    <form method="post" class="grid">
+        {% csrf_token %}
+        <div class="field">
+            <label for="id_username">Foydalanuvchi nomi</label>
+            <input id="id_username" name="username" type="text" autocomplete="username" value="{{ form.username.value|default:'' }}" placeholder="Loginni kiriting">
+            {% if form.username.errors %}
+                <div class="field-error">{{ form.username.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="field">
+            <label for="id_password">Parol</label>
+            <input id="id_password" name="password" type="password" autocomplete="current-password" placeholder="Parolni kiriting">
+            {% if form.password.errors %}
+                <div class="field-error">{{ form.password.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <button class="btn btn-primary full" type="submit">Kirish</button>
+    </form>
+
+    <div class="role-grid" aria-label="Rollar">
+        <span class="role-chip">Ofitsiant</span>
+        <span class="role-chip">Kassir</span>
+        <span class="role-chip">Oshpaz</span>
+        <span class="role-chip">Admin</span>
+    </div>
+</section>
+{% endblock %}

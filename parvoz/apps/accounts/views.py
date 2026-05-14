@@ -1,0 +1,113 @@
+from django.shortcuts import render, redirect
+from django.views import View
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
+from django.db import transaction
+
+from .forms import LoginForm, RegisterForm
+from .models import OrganizationMembership, Organization, Activities
+# Create your views here.
+
+class LoginView(View):
+
+    
+    def get(self, request):
+        
+        return render(request, "auth/login_standalone.html")
+    
+    
+    def post(self, request):
+        
+            form = LoginForm(data = request.POST)
+
+            if not form.is_valid():
+                print(request.POST.get("password"))
+                print(request.POST.get("username"))
+
+                print(form.errors)
+                return render(request, "auth/login_standalone.html", context={"form":form})
+
+            username = form.cleaned_data.get('username', None)
+            password = form.cleaned_data.get('password', None)
+
+            print(username, password)
+
+            user = authenticate(request, username=username, password=password)
+            print(user)
+            if user is not None:
+                login(request, user)
+                membership = OrganizationMembership.objects.filter(user=user).first()
+                Activities.objects.create(
+                    organization=membership.organization,
+                    user=user,
+                    action=f"{membership.organization}'s user {user.username} logged in !"
+                )
+                role_redirects = {
+                    "waiter": "waiter_dashboard",
+                    "admin": "admin_dashboard",
+                    "chef": "chef_dashboard",
+                    "accounter": "accounter_dashboard",
+                }
+
+                return redirect(role_redirects.get(membership.role, "login"))
+
+            print("fail")
+            return redirect("home")
+
+
+class RegisterView(View):
+    
+    def get_context_data(self, **kwargs):
+        context = dict(**kwargs)
+        context["organizations"] = Organization.objects.filter(is_active=True)
+        return context
+    
+
+    def get(self, request):
+        return render(request, "auth/register_standalone.html",
+                      self.get_context_data())
+    
+    def post(self, request):
+        
+        form = RegisterForm(data = request.POST)
+        
+        
+        if not form.is_valid():
+            print(form.errors)
+            return render(request, "auth/register_standalone.html",
+                          self.get_context_data(form = form))
+        print(form.cleaned_data.get('organization_id'))
+        print(form, request.POST)
+        try:
+            with transaction.atomic():
+        
+                user = User(
+                    username = form.cleaned_data.get('username'),
+                    phone = form.cleaned_data.get('phone'),
+                )
+                user.set_password(str(form.cleaned_data.get('password1')))
+                user.save()
+                # Get organization
+                organization = Organization.objects.get(id=form.cleaned_data.get('organization'))
+
+                OrganizationMembership.objects.create(
+                    user = user,
+                    organization = organization,
+                    role = form.cleaned_data.get('role'),
+                )
+                
+                
+                Activities.objects.create(
+                        user = user,
+                        action = f"User {user.username} registered, please give attention!"           
+                )
+                return redirect("login")
+        except Organization.DoesNotExist as err:
+            print(err)
+            return render(request, "auth/register_standalone.html", self.get_context_data(form = form, error_org = "Tashkilot topilmadi"))
+        
+
+
+class RedirectView(View):
+    def get(self, request):
+        return redirect("login")

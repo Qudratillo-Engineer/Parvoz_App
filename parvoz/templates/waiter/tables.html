@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Parvoz - Stollar{% endblock %}
+{% block page_id %}tables{% endblock %}
+
+{% block content %}
+<header class="page-head">
+    <div>
+        <p class="eyebrow">Zal holati</p>
+        <h1 class="page-title">Stollar</h1>
+    </div>
+</header>
+
+<section class="table-grid">
+    {% for table in tables %}
+        <article class="table-card">
+            <div class="table-card-top">
+                <h2 class="table-number">Stol {{ table.number }}</h2>
+                <span class="status">{% if table.status == "occupied" %}Band{% else %}Bo'sh{% endif %}</span>
+            </div>
+            <p class="meta">Buyurtmalar soni: {{ table.orders_count|default:0 }}</p>
+            <a class="btn btn-ghost full" href="{% url 'waiter_menu' %}">Menyu ochish</a>
+        </article>
+    {% empty %}
+        {% for item in "xxxxxxxxxxxxxxxxxxxx" %}
+            <article class="table-card">
+                <div class="table-card-top">
+                    <h2 class="table-number">Stol {{ forloop.counter }}</h2>
+                    <span class="status">Bo'sh</span>
+                </div>
+                <p class="meta">Buyurtmalar soni: 0</p>
+                <a class="btn btn-ghost full" href="{% url 'waiter_menu' %}">Menyu ochish</a>
+            </article>
+        {% endfor %}
+    {% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Parvoz - Bildirishnomalar{% endblock %}
+{% block page_id %}notifications{% endblock %}
+
+{% block content %}
+<header class="page-head">
+    <div>
+        <p class="eyebrow">Oshxona xabarlari</p>
+        <h1 class="page-title">Bildirishnomalar</h1>
+    </div>
+</header>
+
+<section class="notice-list">
+    {% for notice in notifications %}
+        <article class="notice-card {% if notice.is_read %}is-read{% else %}is-unread{% endif %}">
+            <div class="notice-top">
+                <div>
+                    <h2 class="notice-title">{{ notice.title|default:"Xabar" }}</h2>
+                    <p class="meta">{{ notice.message }}</p>
+                </div>
+                <span class="status">{{ notice.created_at|time:"H:i" }}</span>
+            </div>
+            {% if not notice.is_read %}
+                <button class="btn btn-ghost" type="button">O'qildi</button>
+            {% endif %}
+        </article>
+    {% empty %}
+        <article class="notice-card is-unread">
+            <div class="notice-top">
+                <div>
+                    <h2 class="notice-title">Stol 4 tayyor</h2>
+                    <p class="meta">Lag'mon va choy oshxonadan chiqdi. Mijozga yetkazish kerak.</p>
+                </div>
+                <span class="status">14:39</span>
+            </div>
+            <button class="btn btn-ghost" type="button">O'qildi</button>
+        </article>
+        <article class="notice-card is-unread">
+            <div class="notice-top">
+                <div>
+                    <h2 class="notice-title">Yangi buyurtma</h2>
+                    <p class="meta">Stol 12 dan shashlik assorti buyurtmasi qabul qilindi.</p>
+                </div>
+                <span class="status">14:31</span>
+            </div>
+            <button class="btn btn-ghost" type="button">O'qildi</button>
+        </article>
+        <article class="notice-card is-read">
+            <div class="notice-top">
+                <div>
+                    <h2 class="notice-title">To'lov yakunlandi</h2>
+                    <p class="meta">Stol 3 uchun 236 000 so'm kassada yopildi.</p>
+                </div>
+                <span class="status">14:08</span>
+            </div>
+        </article>
+    {% endfor %}
+</section>
+{% endblock %}

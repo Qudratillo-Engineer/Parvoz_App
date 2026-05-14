@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#11100e">
+    <title>{% block title %}Parvoz{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/parvoz.css' %}?v=20260512-2">
+    {% block extra_css %}{% endblock %}
+</head>
+<body data-page="{% block page_id %}{% endblock %}">
+    <div class="app-shell">
+        {% block sidebar %}
+        <aside class="sidebar" aria-label="Asosiy navigatsiya">
+            <div class="brand-block">
+                <a class="brand" href="{% url 'waiter_dashboard' %}">PARVOZ</a>
+                <span class="role-name">Ofitsiant</span>
+            </div>
+            <nav class="side-nav">
+                <a class="nav-item" data-nav="dashboard" href="{% url 'waiter_dashboard' %}"><span class="nav-mark">&#8962;</span><span>Bosh sahifa</span></a>
+                <a class="nav-item" data-nav="orders" href="{% url 'waiter_orders' %}"><span class="nav-mark">&#9776;</span><span>Buyurtmalar</span></a>
+                <a class="nav-item" data-nav="menu" href="{% url 'waiter_menu' %}"><span class="nav-mark">&#127869;</span><span>Menyu</span></a>
+                <a class="nav-item" data-nav="tables" href="{% url 'waiter_tables' %}"><span class="nav-mark">&#9638;</span><span>Stollar</span></a>
+                <a class="nav-item" data-nav="notifications" href="{% url 'waiter_notifications' %}"><span class="nav-mark">&#9679;</span><span>Bildirishnomalar</span></a>
+            </nav>
+            <div class="sidebar-user">
+                <span class="user-name">{{ user.first_name|default:user.username|default:"Xodim" }}</span>
+                <span class="user-role">Ofitsiant</span>
+            </div>
+        </aside>
+        {% endblock %}
+
+        <main class="main">
+            {% block content %}{% endblock %}
+        </main>
+
+        {% block bottom_nav %}
+        <nav class="bottom-nav" aria-label="Mobil navigatsiya">
+            <a class="bottom-link" data-nav="dashboard" href="{% url 'waiter_dashboard' %}"><span>&#8962;</span><small>Bosh</small></a>
+            <a class="bottom-link" data-nav="orders" href="{% url 'waiter_orders' %}"><span>&#9776;</span><small>Buy</small></a>
+            <a class="bottom-link" data-nav="menu" href="{% url 'waiter_menu' %}"><span>&#127869;</span><small>Men</small></a>
+            <a class="bottom-link" data-nav="tables" href="{% url 'waiter_tables' %}"><span>&#9638;</span><small>Stol</small></a>
+            <a class="bottom-link" data-nav="notifications" href="{% url 'waiter_notifications' %}"><span>&#9679;</span><small>Xab</small></a>
+        </nav>
+        {% endblock %}
+    </div>
+    <script src="{% static 'js/parvoz.js' %}?v=20260512-2"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

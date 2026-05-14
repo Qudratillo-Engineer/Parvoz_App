@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Parvoz - Admin{% endblock %}
+{% block page_id %}admin-dashboard{% endblock %}
+
+{% block sidebar %}
+<aside class="sidebar" aria-label="Admin navigatsiya">
+    <div class="brand-block">
+        <a class="brand" href="#">PARVOZ</a>
+        <span class="role-name">Admin</span>
+    </div>
+    <nav class="side-nav">
+        <a class="nav-item" data-nav="admin-dashboard" href="#"><span class="nav-mark">&#8962;</span><span>Bosh sahifa</span></a>
+        <a class="nav-item" href="#"><span class="nav-mark">&#9776;</span><span>Buyurtmalar</span></a>
+        <a class="nav-item" href="#"><span class="nav-mark">&#127869;</span><span>Menyu boshqaruvi</span></a>
+        <a class="nav-item" href="#"><span class="nav-mark">&#9673;</span><span>Xodimlar</span></a>
+        <a class="nav-item" href="#"><span class="nav-mark">&#9635;</span><span>Hisobotlar</span></a>
+    </nav>
+    <div class="sidebar-user">
+        <span class="user-name">{{ user.first_name|default:user.username|default:"Admin" }}</span>
+        <span class="user-role">Admin</span>
+    </div>
+</aside>
+{% endblock %}
+
+{% block bottom_nav %}
+<nav class="bottom-nav" aria-label="Admin mobil navigatsiya">
+    <a class="bottom-link active" data-nav="admin-dashboard" href="#"><span>&#8962;</span><small>Bosh</small></a>
+    <a class="bottom-link" href="#"><span>&#9776;</span><small>Buy</small></a>
+    <a class="bottom-link" href="#"><span>&#127869;</span><small>Men</small></a>
+    <a class="bottom-link" href="#"><span>&#9673;</span><small>Xod</small></a>
+    <a class="bottom-link" href="#"><span>&#9635;</span><small>His</small></a>
+</nav>
+{% endblock %}
+
+{% block content %}
+<header class="page-head">
+    <div>
+        <p class="eyebrow">Admin panel</p>
+        <h1 class="page-title">Bosh sahifa</h1>
+    </div>
+</header>
+
+<section class="grid stats-grid admin-stats">
+    <article class="stat-card"><p class="stat-label">Bugungi daromad</p><div class="stat-value">{{ today_income|default:"0" }}</div><div class="stat-sub">so'm</div></article>
+    <article class="stat-card"><p class="stat-label">Buyurtmalar</p><div class="stat-value">{{ total_orders|default:0 }}</div><div class="stat-sub">bugun</div></article>
+    <article class="stat-card"><p class="stat-label">Top taom</p><div class="stat-value">{{ top_dish|default:"-" }}</div><div class="stat-sub">eng ko'p sotilgan</div></article>
+    <article class="stat-card"><p class="stat-label">Faol xodimlar</p><div class="stat-value">{{ active_staff|default:0 }}</div><div class="stat-sub">smenada</div></article>
+</section>
+
+<section class="section-panel">
+    <h2 class="section-title">Haftalik daromad</h2>
+    <div class="chart-strip">
+        {% for day in weekly_income %}
+            <div class="bar"><span style="height: {{ day.percent|default:40 }}%"></span>{{ day.label }}</div>
+        {% empty %}
+            <div class="bar"><span style="height:35%"></span>Du</div>
+            <div class="bar"><span style="height:58%"></span>Se</div>
+            <div class="bar"><span style="height:46%"></span>Cho</div>
+            <div class="bar"><span style="height:72%"></span>Pa</div>
+            <div class="bar"><span style="height:64%"></span>Ju</div>
+            <div class="bar"><span style="height:88%"></span>Sha</div>
+            <div class="bar"><span style="height:77%"></span>Yak</div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
+    <div class="section-panel">
+        <h2 class="section-title">Top 5 taom</h2>
+        <ul class="item-list">
+            {% for dish in top_dishes %}
+                <li><span>{{ dish.name }}</span><strong>{{ dish.count }}</strong></li>
+            {% empty %}
+                <li><span>Osh</span><strong>24</strong></li>
+                <li><span>Shashlik</span><strong>19</strong></li>
+                <li><span>Lag'mon</span><strong>15</strong></li>
+                <li><span>Salat</span><strong>12</strong></li>
+                <li><span>Choy</span><strong>10</strong></li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="section-panel">
+        <h2 class="section-title">Xodimlar smenasi</h2>
+        <div class="table-scroll">
+            <table class="data-table">
+                <thead><tr><th>Ism</th><th>Rol</th><th>Vaqt</th></tr></thead>
+                <tbody>
+                    {% for shift in staff_shifts %}
+                        <tr><td>{{ shift.name }}</td><td>{{ shift.role }}</td><td>{{ shift.time }}</td></tr>
+                    {% empty %}
+                        <tr><td>Ali</td><td>Ofitsiant</td><td>09:00 - 18:00</td></tr>
+                        <tr><td>Malika</td><td>Kassir</td><td>10:00 - 19:00</td></tr>
+                        <tr><td>Jasur</td><td>Oshpaz</td><td>11:00 - 22:00</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

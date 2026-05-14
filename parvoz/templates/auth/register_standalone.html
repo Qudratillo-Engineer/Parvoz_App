@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0f0f0f">
+    <title>Parvoz — Ro'yxatdan O'tish</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Jost:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+
+        :root {
+            --gold-accent: #d4af37;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+            position: relative;
+            overflow-y: auto;
+            font-family: 'Jost', sans-serif;
+        }
+
+        /* Background blur orbs */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(26, 58, 110, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(212, 175, 55, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Grid pattern */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(212, 175, 55, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(212, 175, 55, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container-app {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            width: 100%;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .register-wrapper {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .register-card {
+            background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 16px;
+            padding: 40px 32px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
+        }
+
+        /* Logo Section */
+        .register-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .register-logo-bird {
+            width: 70px;
+            height: 70px;
+            color: var(--gold-accent);
+            margin: 0 auto 16px;
+            display: block;
+        }
+
+        .register-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .register-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-top: 8px;
+            letter-spacing: 1px;
+        }
+
+        /* Form Styling */
+        .register-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-control {
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Jost', sans-serif;
+            font-size: 14px;
+            min-height: 48px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--gold-accent);
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+
+        .form-control option {
+            background: #1a1a1a;
+            color: var(--text-primary);
+        }
+
+        .form-control option:hover {
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        /* Error Messages */
+        .error-message {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 8px;
+            padding: 12px 14px;
+            color: #ff9999;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+
+        .field-error {
+            color: #ff9999;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        /* Submit Button */
+        .btn-submit {
+            padding: 14px 20px;
+            background: var(--gold-accent);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Jost', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            min-height: 48px;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 8px;
+        }
+
+        .btn-submit:hover {
+            background: #e5c158;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        /* Login Link */
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .login-link a {
+            color: var(--gold-accent);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .login-link a:hover {
+            color: #e5c158;
+        }
+        /* Role Selection */
+        .roles-section {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .roles-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .role-option {
+            position: relative;
+        }
+
+        .role-option input[type="radio"] {
+            display: none;
+        }
+
+        .role-btn {
+            padding: 12px 8px;
+            background: rgba(212, 175, 55, 0.08);
+            border: 2px solid rgba(212, 175, 55, 0.2);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-family: 'Jost', sans-serif;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            display: block;
+            width: 100%;
+        }
+
+        .role-option input[type="radio"]:checked + .role-btn {
+            background: rgba(212, 175, 55, 0.25);
+            color: var(--gold-accent);
+            border-color: var(--gold-accent);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+
+        .role-btn:hover {
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--gold-accent);
+            border-color: var(--gold-accent);
+        }
+        /* Responsive */
+        @media (max-width: 480px) {
+            .register-card {
+                padding: 32px 24px;
+            }
+
+            .register-logo-bird {
+                width: 60px;
+                height: 60px;
+            }
+
+            .register-title {
+                font-size: 16px;
+            }
+
+            .form-control {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-app">
+        <div class="register-wrapper">
+            <div class="register-card">
+                
+                <!-- Header -->
+                <div class="register-header">
+                    <svg class="register-logo-bird" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M23.643 4.937c-.835.37-1.732.62-2.675.733.962-.576 1.7-1.49 2.048-2.578-.9.534-1.897.922-2.958 1.13-.85-.904-2.06-1.47-3.4-1.47-2.572 0-4.658 2.086-4.658 4.66 0 .364.042.718.12 1.06-3.873-.195-7.304-2.05-9.602-4.868-.4.69-.63 1.49-.63 2.342 0 1.616.823 3.043 2.072 3.878-.764-.025-1.482-.234-2.11-.583v.06c0 2.257 1.605 4.14 3.737 4.568-.392.106-.803.162-1.227.162-.3 0-.593-.028-.877-.082.593 1.85 2.323 3.196 4.368 3.234-1.595 1.25-3.604 1.995-5.786 1.995-.376 0-.747-.022-1.112-.065 2.072 1.328 4.532 2.104 7.17 2.104 8.603 0 13.29-7.197 13.29-13.426 0-.204-.005-.408-.015-.612.913-.658 1.7-1.477 2.323-2.41z"/>
+                    </svg>
+                    <div class="register-subtitle">Restoran Boshqaruvi Tizimi</div>
+                    <div class="register-title">Ro'yxatdan O'tish</div>
+                </div>
+
+                <!-- Error Messages -->
+                {% if form.non_field_errors %}
+                    {% for error in form.non_field_errors %}
+                        <div class="error-message">
+                            ❌ {{ error }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% if error %}
+                    <div class="error-message">
+                        ❌ {{ error }}
+                    </div>
+                {% endif %}
+
+                <!-- Register Form -->
+                <form method="POST" class="register-form">
+                    {% csrf_token %}
+
+                    <!-- Username -->
+                    <div class="form-group">
+                        <label for="id_username">Foydalanuvchi Nomi</label>
+                        <input 
+                            type="text" 
+                            id="id_username"
+                            name="username" 
+                            class="form-control"
+                            placeholder="Foydalanuvchi nomini kiriting"
+                            value="{{ form.username.value|default:'' }}"
+                            required
+                            autocomplete="username">
+                        {% if form.username.errors %}
+                            {% for error in form.username.errors %}
+                                <div class="field-error">{{ error }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <!-- Phone Number -->
+                    <div class="form-group">
+                        <label for="id_phone">Telefon Raqami</label>
+                        <input 
+                            type="tel" 
+                            id="id_phone"
+                            name="phone" 
+                            class="form-control"
+                            placeholder="+998 XX XXX XX XX"
+                            value="{{ form.phone.value|default:'' }}"
+                            required
+                            autocomplete="tel">
+                        {% if form.phone.errors %}
+                            {% for error in form.phone.errors %}
+                                <div class="field-error">{{ error }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-group">
+                        <label for="id_password">Parol</label>
+                        <input 
+                            type="password" 
+                            id="id_password"
+                            name="password1" 
+                            class="form-control"
+                            placeholder="Parol kiriting"
+                            required
+                            autocomplete="new-password">
+                        {% if form.password.errors %}
+                            {% for error in form.password.errors %}
+                                <div class="field-error">{{ error }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div class="form-group">
+                        <label for="id_confirm_password">Parolni Tasdiqlash</label>
+                        <input 
+                            type="password" 
+                            id="id_confirm_password"
+                            name="password2" 
+                            class="form-control"
+                            placeholder="Parolni qayta kiriting"
+                            required
+                            autocomplete="new-password">
+                        {% if form.confirm_password.errors %}
+                            {% for error in form.confirm_password.errors %}
+                                <div class="field-error">{{ error }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <!-- Organization Selection -->
+                    <div class="form-group">
+                        <label for="id_organization">Tashkilot</label>
+                        <select 
+                            id="id_organization"
+                            name="organization" 
+                            class="form-control"
+                            required>
+                            <option value="">-- Tashkilot tanlang --</option>
+                            {% for org in organizations %}
+                                <option value="{{ org.id }}">{{ org.name }}</option>
+                            {% endfor %}
+                        </select>
+                        {% if error_org %}
+                            <div class="field-error">{{ error_org }}</div>
+                        {% endif %}
+                    </div>
+                    <!-- Role Selection -->
+                    <div class="roles-section">
+                        <span class="roles-label">Rola Tanlang</span>
+                        <div class="roles-grid">
+                            <label class="role-option">
+                                <input type="radio" name="role" value="waiter" required>
+                                <button type="button" class="role-btn">👤 Ofitsiant</button>
+                            </label>
+                            <label class="role-option">
+                                <input type="radio" name="role" value="cashier" required>
+                                <button type="button" class="role-btn">💰 Kassir</button>
+                            </label>
+                            <label class="role-option">
+                                <input type="radio" name="role" value="chef" required>
+                                <button type="button" class="role-btn">👨‍🍳 Oshpaz</button>
+                            </label>
+                            <label class="role-option">
+                                <input type="radio" name="role" value="admin" required>
+                                <button type="button" class="role-btn">⚙️ Admin</button>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn-submit">✓ Ro'yxatdan O'tish</button>
+                </form>
+
+                <!-- Login Link -->
+                <div class="login-link">
+                    Hisobingiz bormi? <a href="{% url 'login' %}">Kirish</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Make role buttons clickable
+        document.querySelectorAll('.role-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const radio = btn.previousElementSibling;
+                radio.checked = true;
+            });
+        });
+    </script>
+</body>
+</html>

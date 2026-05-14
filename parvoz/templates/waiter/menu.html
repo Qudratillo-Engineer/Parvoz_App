@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Parvoz - Menyu{% endblock %}
+{% block page_id %}menu{% endblock %}
+
+{% block content %}
+<header class="page-head">
+    <div>
+        <p class="eyebrow">Stol {{ table_number|default:"tanlanmagan" }}</p>
+        <h1 class="page-title">Menyu</h1>
+    </div>
+</header>
+
+<div class="pill-row">
+    <button class="pill active" type="button" data-category="all">Barchasi</button>
+    {% for category in categories %}
+        <button class="pill" type="button" data-category="{{ category.slug|default:category.id }}">{{ category.name }}</button>
+    {% empty %}
+        <button class="pill" type="button" data-category="issiq">Issiq taomlar</button>
+        <button class="pill" type="button" data-category="ichimlik">Ichimliklar</button>
+        <button class="pill" type="button" data-category="shirinlik">Shirinliklar</button>
+    {% endfor %}
+</div>
+
+<div class="menu-layout">
+    <section class="menu-grid">
+        {% for item in menu_items %}
+            <article class="dish-card" data-dish-category="{{ item.category.slug|default:item.category.id }}">
+                <div class="dish-top">
+                    <h2 class="dish-title">{{ item.name }}</h2>
+                    <span class="price">{{ item.price }} so'm</span>
+                </div>
+                <p class="meta">{{ item.description|default:"Tavsif tez orada qo'shiladi." }}</p>
+                <button class="btn btn-primary full" type="button">Savatchaga qo'shish</button>
+            </article>
+        {% empty %}
+            <article class="dish-card" data-dish-category="issiq">
+                <div class="dish-top"><h2 class="dish-title">Osh</h2><span class="price">45 000 so'm</span></div>
+                <p class="meta">Qo'y go'shti, sabzi, no'xat va ziravorlar bilan.</p>
+                <button class="btn btn-primary full" type="button">Savatchaga qo'shish</button>
+            </article>
+            <article class="dish-card" data-dish-category="ichimlik">
+                <div class="dish-top"><h2 class="dish-title">Choy</h2><span class="price">8 000 so'm</span></div>
+                <p class="meta">Ko'k yoki qora choy, limon bilan beriladi.</p>
+                <button class="btn btn-primary full" type="button">Savatchaga qo'shish</button>
+            </article>
+            <article class="dish-card" data-dish-category="issiq">
+                <div class="dish-top"><h2 class="dish-title">Mol go'shtli lag'mon</h2><span class="price">38 000 so'm</span></div>
+                <p class="meta">Qo'lda tortilgan xamir, sabzavot va quyuq qayla.</p>
+                <button class="btn btn-primary full" type="button">Savatchaga qo'shish</button>
+            </article>
+            <article class="dish-card" data-dish-category="issiq">
+                <div class="dish-top"><h2 class="dish-title">Shashlik assorti</h2><span class="price">72 000 so'm</span></div>
+                <p class="meta">Mol, tovuq va qiyma shashlikdan iborat to'plam.</p>
+                <button class="btn btn-primary full" type="button">Savatchaga qo'shish</button>
+            </article>
+            <article class="dish-card" data-dish-category="shirinlik">
+                <div class="dish-top"><h2 class="dish-title">Napoleon</h2><span class="price">24 000 so'm</span></div>
+                <p class="meta">Mayin kremli qatlamli desert.</p>
+                <button class="btn btn-primary full" type="button">Savatchaga qo'shish</button>
+            </article>
+            <article class="dish-card" data-dish-category="ichimlik">
+                <div class="dish-top"><h2 class="dish-title">Moxito</h2><span class="price">22 000 so'm</span></div>
+                <p class="meta">Yalpiz, laym va gazli ichimlik bilan salqin kokteyl.</p>
+                <button class="btn btn-primary full" type="button">Savatchaga qo'shish</button>
+            </article>
+        {% endfor %}
+    </section>
+
+    <aside class="section-panel cart-panel">
+        <h2 class="section-title">Savatcha</h2>
+        <ul class="item-list">
+            <li><span>Stol</span><strong>{{ table_number|default:"7" }}</strong></li>
+            <li><span>Osh</span><strong>2x</strong></li>
+            <li><span>Ko'k choy</span><strong>1x</strong></li>
+        </ul>
+        <div class="cart-total"><span>Jami</span><strong class="price">98 000 so'm</strong></div>
+        <button class="btn btn-primary full" type="button" style="margin-top:14px">Buyurtma berish</button>
+    </aside>
+</div>
+{% endblock %}
