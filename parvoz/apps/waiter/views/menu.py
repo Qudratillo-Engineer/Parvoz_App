@@ -1,8 +1,33 @@
 from django.shortcuts import render
-
-# Create your views here.
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 
-class WaiterMenuView(View):
+from apps.orders.models import Food
+# Create your views here.
+
+
+
+class WaiterMenuView(LoginRequiredMixin,View):
     def get(self, request):
-        return render(request, "waiter/menu.html")
+        
+        menu_items = Food.objects.all()
+        
+        data = {
+            "menu_items":menu_items
+        }
+        return render(request, "waiter/menu.html", context=data)
+    
+
+
+class WaiterMenuWithTableView(LoginRequiredMixin,View):
+    
+    def get(self, request, table_id):
+        
+        menu_items = Food.objects.all()
+        
+        data = {
+            "table_id":table_id,
+            "menu_items":menu_items
+        }
+        
+        return render(request, "waiter/menu.html", context=data)

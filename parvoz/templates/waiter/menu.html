@@ -6,7 +6,7 @@
 {% block content %}
 <header class="page-head">
     <div>
-        <p class="eyebrow">Stol {{ table_number|default:"tanlanmagan" }}</p>
+        <p class="eyebrow">Stol {{ table_id|default:"tanlanmagan" }}</p>
         <h1 class="page-title">Menyu</h1>
     </div>
 </header>
@@ -16,66 +16,176 @@
     {% for category in categories %}
         <button class="pill" type="button" data-category="{{ category.slug|default:category.id }}">{{ category.name }}</button>
     {% empty %}
-        <button class="pill" type="button" data-category="issiq">Issiq taomlar</button>
-        <button class="pill" type="button" data-category="ichimlik">Ichimliklar</button>
-        <button class="pill" type="button" data-category="shirinlik">Shirinliklar</button>
+        <button class="pill" type="button" data-category="main">Issiq taomlar</button>
+        <button class="pill" type="button" data-category="drink">Ichimliklar</button>
+        <button class="pill" type="button" data-category="dessert">Shirinliklar</button>
     {% endfor %}
 </div>
 
 <div class="menu-layout">
     <section class="menu-grid">
         {% for item in menu_items %}
-            <article class="dish-card" data-dish-category="{{ item.category.slug|default:item.category.id }}">
+            <article class="dish-card" data-dish-category="{{ item.type }}">
                 <div class="dish-top">
                     <h2 class="dish-title">{{ item.name }}</h2>
                     <span class="price">{{ item.price }} so'm</span>
                 </div>
                 <p class="meta">{{ item.description|default:"Tavsif tez orada qo'shiladi." }}</p>
-                <button class="btn btn-primary full" type="button">Savatchaga qo'shish</button>
+                <button 
+                    class="btn btn-primary full" 
+                    type="button"
+                    onclick="addFood('{{ item.pk }}', '{{ item.name }}', {{ item.price }})">
+                    Savatchaga qo'shish
+                </button>
             </article>
         {% empty %}
             <article class="dish-card" data-dish-category="issiq">
                 <div class="dish-top"><h2 class="dish-title">Osh</h2><span class="price">45 000 so'm</span></div>
                 <p class="meta">Qo'y go'shti, sabzi, no'xat va ziravorlar bilan.</p>
-                <button class="btn btn-primary full" type="button">Savatchaga qo'shish</button>
+                <button class="btn btn-primary full" type="button" onclick="addFood('1', 'Osh', 45000)">Savatchaga qo'shish</button>
             </article>
             <article class="dish-card" data-dish-category="ichimlik">
                 <div class="dish-top"><h2 class="dish-title">Choy</h2><span class="price">8 000 so'm</span></div>
                 <p class="meta">Ko'k yoki qora choy, limon bilan beriladi.</p>
-                <button class="btn btn-primary full" type="button">Savatchaga qo'shish</button>
-            </article>
-            <article class="dish-card" data-dish-category="issiq">
-                <div class="dish-top"><h2 class="dish-title">Mol go'shtli lag'mon</h2><span class="price">38 000 so'm</span></div>
-                <p class="meta">Qo'lda tortilgan xamir, sabzavot va quyuq qayla.</p>
-                <button class="btn btn-primary full" type="button">Savatchaga qo'shish</button>
-            </article>
-            <article class="dish-card" data-dish-category="issiq">
-                <div class="dish-top"><h2 class="dish-title">Shashlik assorti</h2><span class="price">72 000 so'm</span></div>
-                <p class="meta">Mol, tovuq va qiyma shashlikdan iborat to'plam.</p>
-                <button class="btn btn-primary full" type="button">Savatchaga qo'shish</button>
-            </article>
-            <article class="dish-card" data-dish-category="shirinlik">
-                <div class="dish-top"><h2 class="dish-title">Napoleon</h2><span class="price">24 000 so'm</span></div>
-                <p class="meta">Mayin kremli qatlamli desert.</p>
-                <button class="btn btn-primary full" type="button">Savatchaga qo'shish</button>
-            </article>
-            <article class="dish-card" data-dish-category="ichimlik">
-                <div class="dish-top"><h2 class="dish-title">Moxito</h2><span class="price">22 000 so'm</span></div>
-                <p class="meta">Yalpiz, laym va gazli ichimlik bilan salqin kokteyl.</p>
-                <button class="btn btn-primary full" type="button">Savatchaga qo'shish</button>
+                <button class="btn btn-primary full" type="button" onclick="addFood('2', 'Choy', 8000)">Savatchaga qo'shish</button>
             </article>
         {% endfor %}
     </section>
 
     <aside class="section-panel cart-panel">
         <h2 class="section-title">Savatcha</h2>
-        <ul class="item-list">
-            <li><span>Stol</span><strong>{{ table_number|default:"7" }}</strong></li>
-            <li><span>Osh</span><strong>2x</strong></li>
-            <li><span>Ko'k choy</span><strong>1x</strong></li>
+
+        <ul class="item-list" id="cart-list">
+            <li id="table-row">
+                <span>Stol</span>
+                <strong>{{ table_id|default:"Belgilanmadi" }}</strong>
+            </li>
+            <li id="cart-empty-msg" style="color: rgba(255,255,255,0.3); font-size: 13px;">
+                Hali hech narsa qo'shilmadi
+            </li>
         </ul>
-        <div class="cart-total"><span>Jami</span><strong class="price">98 000 so'm</strong></div>
-        <button class="btn btn-primary full" type="button" style="margin-top:14px">Buyurtma berish</button>
+
+        <div class="cart-total">
+            <span>Jami</span>
+            <strong class="price" id="cart-total">0 so'm</strong>
+        </div>
+
+        {% if table_id %}
+        <form method="POST" action="{% url 'create_order' %}">
+            {% csrf_token %}
+            <input type="hidden" name="table_id" value="{{ table_id }}">
+            <input type="hidden" name="foods" id="foods-input" value="">
+            <button 
+                class="btn btn-primary full" 
+                type="submit" 
+                id="order-btn"
+                style="margin-top:14px; opacity:0.4; pointer-events:none;">
+                Buyurtma berish
+            </button>
+        </form>
+        {% else %}
+        <p style="font-size:12px; color:rgba(255,255,255,0.3); margin-top:14px; text-align:center;">
+            Buyurtma berish uchun avval stol tanlang
+        </p>
+        {% endif %}
     </aside>
 </div>
+
+<script>
+    let cart = {}; // { food_id: { name, price, qty } }
+
+    function addFood(foodId, foodName, price) {
+        if (cart[foodId]) {
+            cart[foodId].qty += 1;
+        } else {
+            cart[foodId] = { name: foodName, price: price, qty: 1 };
+        }
+        updateCart();
+    }
+
+    function removeFood(foodId) {
+        if (!cart[foodId]) return;
+        cart[foodId].qty -= 1;
+        if (cart[foodId].qty === 0) delete cart[foodId];
+        updateCart();
+    }
+
+    function updateCart() {
+        const list = document.getElementById('cart-list');
+        const totalEl = document.getElementById('cart-total');
+        const foodsInput = document.getElementById('foods-input');
+        const orderBtn = document.getElementById('order-btn');
+        const emptyMsg = document.getElementById('cart-empty-msg');
+
+        // Eski itemlarni o'chir (table-row ni saqla)
+        list.querySelectorAll('.cart-item').forEach(el => el.remove());
+
+        let total = 0;
+        const foodIds = Object.keys(cart);
+
+        if (foodIds.length === 0) {
+            if (emptyMsg) emptyMsg.style.display = 'block';
+            if (orderBtn) {
+                orderBtn.style.opacity = '0.4';
+                orderBtn.style.pointerEvents = 'none';
+            }
+        } else {
+            if (emptyMsg) emptyMsg.style.display = 'none';
+            if (orderBtn) {
+                orderBtn.style.opacity = '1';
+                orderBtn.style.pointerEvents = 'auto';
+            }
+
+            foodIds.forEach(id => {
+                const item = cart[id];
+                total += item.price * item.qty;
+
+                const li = document.createElement('li');
+                li.className = 'cart-item';
+                li.innerHTML = `
+                    <span>${item.name}</span>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <button type="button" onclick="removeFood('${id}')" 
+                            style="width:22px;height:22px;border-radius:5px;background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.15);color:#E8D5A3;cursor:pointer;">
+                            −
+                        </button>
+                        <strong>${item.qty}x</strong>
+                        <button type="button" onclick="addFood('${id}', '${item.name}', ${item.price})"
+                            style="width:22px;height:22px;border-radius:5px;background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.15);color:#E8D5A3;cursor:pointer;">
+                            +
+                        </button>
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        // Jami narx
+        totalEl.textContent = total.toLocaleString('uz-UZ') + " so'm";
+
+        // Hidden input — backend uchun "food_id:qty,food_id:qty"
+        if (foodsInput) {
+            foodsInput.value = foodIds
+                .map(id => `${id}:${cart[id].qty}`)
+                .join(',');
+        }
+    }
+
+    // Kategoriya filter
+    document.querySelectorAll('.pill').forEach(btn => {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('.pill').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+
+            const category = this.dataset.category;
+            document.querySelectorAll('.dish-card').forEach(card => {
+                if (category === 'all' || card.dataset.dishCategory === category) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

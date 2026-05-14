@@ -71,7 +71,7 @@ class Order(BaseModel):
         DONE = "done", 'Done'
     
     
-    organisation = models.ForeignKey(
+    organization = models.ForeignKey(
         Organization,
         related_name="orders",
         on_delete=models.CASCADE
@@ -82,10 +82,7 @@ class Order(BaseModel):
         related_name="orders",
         on_delete=models.CASCADE
     )
-    foods = models.ManyToManyField(
-        Food,
-        related_name="orders",
-    )
+
     table = models.ForeignKey(
         Table,
         related_name="orders",
@@ -102,7 +99,7 @@ class Order(BaseModel):
         primary_key=True,
         editable=False
         )
-    overall_price = models.PositiveBigIntegerField()
+    total = models.PositiveBigIntegerField()
     
     def __str__(self):
         return F"{self.order_id}# {self.status}"
@@ -112,6 +109,23 @@ class Order(BaseModel):
             models.Index(fields=["table", "user", "status"]),
             models.Index(fields=["user","table"])
         ]
+    
+class OrderItem(models.Model):
+    
+    order = models.ForeignKey(
+        Order,
+        related_name="order_items",
+        on_delete=models.CASCADE
+    )
+    food = models.ForeignKey(
+        Food,
+        related_name="order_items",
+        on_delete=models.CASCADE
+    )
+    quantity = models.PositiveSmallIntegerField()
+    
+    def __str__(self):
+        return self.food.name
 
 class Notification(BaseModel):
     

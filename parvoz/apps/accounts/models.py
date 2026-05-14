@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 class OrganizationChoices(models.TextChoices):
     
     CAFE = "cafe", "Cafe"
-    RESTORAN = "restoran", "Restoran"
+    RESTORANE= "restorane", "Restorane"
 
 
 

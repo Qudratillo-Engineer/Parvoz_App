@@ -19,7 +19,7 @@
                 <span class="status">{% if table.status == "occupied" %}Band{% else %}Bo'sh{% endif %}</span>
             </div>
             <p class="meta">Buyurtmalar soni: {{ table.orders_count|default:0 }}</p>
-            <a class="btn btn-ghost full" href="{% url 'waiter_menu' %}">Menyu ochish</a>
+            <a class="btn btn-ghost full" href="{% url 'waiter_menu_table' table.pk %}">Menyu ochish</a>
         </article>
     {% empty %}
         {% for item in "xxxxxxxxxxxxxxxxxxxx" %}

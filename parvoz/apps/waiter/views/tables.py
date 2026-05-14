@@ -1,10 +1,12 @@
 from django.views import View
 from django.shortcuts import render
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from apps.orders.models import Table
 
 
-class WaiterTablesView(View):
+class WaiterTablesView(LoginRequiredMixin,View):
+    
     def get(self, request):
         
         tables = Table.objects.all()
@@ -12,6 +14,8 @@ class WaiterTablesView(View):
         data = {
             "tables": tables
         }
-        
-        return render(request, "waiter/tables.html")
+        return render(request, "waiter/tables.html", context=data)
+    
+    def post():
+        pass
     

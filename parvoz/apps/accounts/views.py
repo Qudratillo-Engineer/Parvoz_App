@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.db import transaction
 
@@ -8,9 +8,14 @@ from .forms import LoginForm, RegisterForm
 from .models import OrganizationMembership, Organization, Activities
 # Create your views here.
 
+class RedirectView(View):
+    def get(self, request):
+        return redirect("login")
+
+
+
 class LoginView(View):
 
-    
     def get(self, request):
         
         return render(request, "auth/login_standalone.html")
@@ -51,8 +56,9 @@ class LoginView(View):
 
                 return redirect(role_redirects.get(membership.role, "login"))
 
-            print("fail")
-            return redirect("home")
+           
+            return render(request, "auth/login_standalone.html", context={"form":form})
+
 
 
 class RegisterView(View):
@@ -99,7 +105,8 @@ class RegisterView(View):
                 
                 Activities.objects.create(
                         user = user,
-                        action = f"User {user.username} registered, please give attention!"           
+                        action = f"User {user.username} registered, please give attention!",
+                        organization = organization,
                 )
                 return redirect("login")
         except Organization.DoesNotExist as err:
@@ -107,7 +114,9 @@ class RegisterView(View):
             return render(request, "auth/register_standalone.html", self.get_context_data(form = form, error_org = "Tashkilot topilmadi"))
         
 
-
-class RedirectView(View):
+class Logout(View):
+    
     def get(self, request):
+        
+        logout(request)
         return redirect("login")
