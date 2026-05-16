@@ -13,37 +13,79 @@
 
 <div class="pill-row">
     <button class="pill active" type="button" data-order-filter="all">Barchasi</button>
-    <button class="pill" type="button" data-order-filter="new">Yangi</button>
-    <button class="pill" type="button" data-order-filter="preparing">Tayyorlanmoqda</button>
+    <button class="pill" type="button" data-order-filter="pending">Tayyorlanmoqda</button>
     <button class="pill" type="button" data-order-filter="ready">Tayyor</button>
-    <button class="pill" type="button" data-order-filter="served">Yetkazildi</button>
+    <button class="pill" type="button" data-order-filter="delivered">Yetkazildi</button>
+    <button class="pill" type="button" data-order-filter="paid">Tulangan</button>
+    <button class="pill" type="button" data-order-filter="cancelled">Qaytarildi</button>
 </div>
-
 <section class="orders-grid">
     {% for order in orders %}
         <article class="order-card" data-order-status="{{ order.status|default:'new' }}">
             <div class="order-top">
                 <h2 class="order-title">#{{ order.id|default:forloop.counter }}</h2>
-                <span class="status">{{ order.get_status_display|default:order.status|default:"Yangi" }}</span>
+                {% if order.status == "pending" %}
+                    <span class="status status--pending">Tayyorlanmoqda</span>
+                {% elif order.status == "ready" %}
+                    <span class="status status--ready">Tayyor</span>
+                {% elif order.status == "delivered" %}
+                    <span class="status status--delivered">Yetkazildi</span>
+                {% elif order.status == "paid" %}
+                    <span class="status status--paid">To'langan</span>
+                {% elif order.status == "cancelled" %}
+                    <span class="status status--cancelled">Bekor qilindi</span>
+                {% endif %}
             </div>
-            <p class="meta">Stol {{ order.table.number|default:order.table_number|default:"-" }} | {{ order.created_at|time:"H:i" }}</p>
+
+            <p class="meta">Stol {{ order.table.number|default:"-" }} | {{ order.created_at|time:"H:i" }}</p>
+
             <ul class="item-list">
-                {% for item in order.items.all %}
-                    <li><span>{{ item.dish.name|default:item.name }}</span><strong>{{ item.quantity }}x</strong></li>
+                {% for item in order.order_items.all %}
+                    <li><span>{{ item.food.name|default:"None" }}</span><strong>{{ item.quantity }}x</strong></li>
                 {% empty %}
                     <li><span>Taomlar ro'yxati</span><strong>-</strong></li>
                 {% endfor %}
             </ul>
-            <div class="cart-total"><span>Jami</span><strong class="price">{{ order.total_price|default:"0" }} so'm</strong></div>
-            <div class="actions" style="margin-top:14px">
-                <button class="btn btn-primary full" type="button">Yetkazildi</button>
+
+            <div class="cart-total">
+                <span>Jami</span>
+                <strong class="price">{{ order.total|default:"0" }} so'm</strong>
             </div>
+
+            {% if order.status != "cancelled" and order.status != "paid" %}
+            <div class="actions" style="margin-top:14px; display:flex; gap:8px; align-items:center;">
+
+                {% if order.status == "pending" or order.status == "ready" %}
+                <form method="POST" action="{% url 'change_order_status' %}" style="flex:1">
+                    {% csrf_token %}
+                    <input type="hidden" name="order_id" value="{{ order.id }}">
+                    <button class="btn btn-primary full" type="submit">
+                        Yetkazildi
+                    </button>
+                </form>
+                {% endif %}
+
+                <form method="POST" action="{% url 'cancel_order' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="order_id" value="{{ order.id }}">
+                    <button
+                        class="btn btn-cancel"
+                        type="submit"
+                        onclick="return confirm('Bekor qilinsinmi?')"
+                        style="padding: 10px 16px; white-space:nowrap;">
+                        ✕ Bekor
+                    </button>
+                </form>
+
+            </div>
+            {% endif %}
+
         </article>
     {% empty %}
-        <article class="order-card" data-order-status="new">
+        <article class="order-card" data-order-status="pending">
             <div class="order-top">
                 <h2 class="order-title">#1024</h2>
-                <span class="status">Yangi</span>
+                <span class="status status--pending">Tayyorlanmoqda</span>
             </div>
             <p class="meta">Stol 7 | 14:25</p>
             <ul class="item-list">
@@ -52,39 +94,9 @@
                 <li><span>Ko'k choy</span><strong>1x</strong></li>
             </ul>
             <div class="cart-total"><span>Jami</span><strong class="price">116 000 so'm</strong></div>
-            <div class="actions" style="margin-top:14px">
-                <button class="btn btn-primary full" type="button">Yetkazildi</button>
-            </div>
-        </article>
-        <article class="order-card" data-order-status="preparing">
-            <div class="order-top">
-                <h2 class="order-title">#1025</h2>
-                <span class="status">Tayyorlanmoqda</span>
-            </div>
-            <p class="meta">Stol 12 | 14:31</p>
-            <ul class="item-list">
-                <li><span>Shashlik assorti</span><strong>1x</strong></li>
-                <li><span>Non</span><strong>2x</strong></li>
-                <li><span>Moxito</span><strong>2x</strong></li>
-            </ul>
-            <div class="cart-total"><span>Jami</span><strong class="price">120 000 so'm</strong></div>
-            <div class="actions" style="margin-top:14px">
-                <button class="btn btn-primary full" type="button">Yetkazildi</button>
-            </div>
-        </article>
-        <article class="order-card" data-order-status="ready">
-            <div class="order-top">
-                <h2 class="order-title">#1026</h2>
-                <span class="status">Tayyor</span>
-            </div>
-            <p class="meta">Stol 4 | 14:37</p>
-            <ul class="item-list">
-                <li><span>Mol go'shtli lag'mon</span><strong>2x</strong></li>
-                <li><span>Choy</span><strong>1x</strong></li>
-            </ul>
-            <div class="cart-total"><span>Jami</span><strong class="price">84 000 so'm</strong></div>
-            <div class="actions" style="margin-top:14px">
-                <button class="btn btn-primary full" type="button">Yetkazildi</button>
+            <div class="actions" style="margin-top:14px; display:flex; gap:8px;">
+                <button class="btn btn-primary full" type="button" style="flex:1">Yetkazildi</button>
+                <button class="btn btn-cancel" type="button" style="padding:10px 16px">✕ Bekor</button>
             </div>
         </article>
     {% endfor %}

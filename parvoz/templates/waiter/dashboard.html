@@ -34,10 +34,24 @@
     <h2 class="section-title">Stol tanlash</h2>
     <div class="table-picker">
         {% for table in tables %}
-            <button class="table-btn {% if table.is_occupied %}is-busy{% else %}is-free{% endif %}" type="button" data-table="{{ table.number }}">
-                <strong>{{ table.number }}</strong>
-                <small>{% if table.is_occupied %}Band{% else %}Bo'sh{% endif %}</small>
-            </button>
+            <a
+                href="{% url 'waiter_menu_table' table.id %}"
+                class="table-btn {% if table.is_occupied %}is-busy{% else %}is-free{% endif %}"
+            >
+                {% if table.status == "occupied" %}
+                    <strong style="color: red ;">{{ table.number }}</strong>
+                {% else %}
+                    <strong style="color: green ;">{{ table.number }}</strong>
+                {% endif %}
+
+                <small>
+                    {% if table.status == "occupied" %}
+                        Band
+                    {% else %}
+                        Bo'sh
+                    {% endif %}
+                </small>
+            </a>
         {% empty %}
             {% for item in "xxxxxxxxxxxxxxxxxxxx" %}
                 <button class="table-btn is-free" type="button" data-table="{{ forloop.counter }}">
@@ -60,12 +74,12 @@
     <h2 class="section-title">Joriy buyurtmalar</h2>
     <div class="orders-grid">
         {% for order in active_orders %}
-            <article class="order-card">
+            <article class="order-card" data-order-status="{{ order.status|default:'new' }}">
                 <div class="order-top">
                     <h3 class="order-title">Buyurtma #{{ order.id|default:forloop.counter }}</h3>
                     <span class="status">{{ order.get_status_display|default:order.status|default:"Yangi" }}</span>
                 </div>
-                <p class="meta">Stol {{ order.table.number|default:order.table_number|default:"-" }} | {{ order.created_at|time:"H:i" }}</p>
+                <p class="meta">Stol {{ order.table.number|default:order.table.number|default:"-" }} | {{ order.created_at|time:"H:i" }}</p>
                 <ul class="item-list">
                     {% for item in order.items.all %}
                         <li><span>{{ item.dish.name|default:item.name }}</span><strong>{{ item.quantity }}x</strong></li>
@@ -79,7 +93,7 @@
                 </div>
             </article>
         {% empty %}
-            <article class="order-card">
+            <article class="order-card" data-order-status="pending">
                 <div class="order-top">
                     <h3 class="order-title">Buyurtma #1024</h3>
                     <span class="status">Tayyorlanmoqda</span>
@@ -96,7 +110,7 @@
                     <button class="btn btn-primary" type="button">Tayyor</button>
                 </div>
             </article>
-            <article class="order-card">
+            <article class="order-card" data-order-status="new">
                 <div class="order-top">
                     <h3 class="order-title">Buyurtma #1025</h3>
                     <span class="status">Yangi</span>

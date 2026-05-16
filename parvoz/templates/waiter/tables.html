@@ -13,7 +13,7 @@
 
 <section class="table-grid">
     {% for table in tables %}
-        <article class="table-card">
+        <article class="table-card" data-table-status="{{ table.status|default:'free' }}">
             <div class="table-card-top">
                 <h2 class="table-number">Stol {{ table.number }}</h2>
                 <span class="status">{% if table.status == "occupied" %}Band{% else %}Bo'sh{% endif %}</span>
@@ -23,7 +23,7 @@
         </article>
     {% empty %}
         {% for item in "xxxxxxxxxxxxxxxxxxxx" %}
-            <article class="table-card">
+            <article class="table-card" data-table-status="free">
                 <div class="table-card-top">
                     <h2 class="table-number">Stol {{ forloop.counter }}</h2>
                     <span class="status">Bo'sh</span>

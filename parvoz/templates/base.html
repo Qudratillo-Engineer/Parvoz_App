@@ -9,10 +9,26 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/parvoz.css' %}?v=20260512-2">
+    <link rel="stylesheet" href="{% static 'css/parvoz.css' %}?v=20260516-3">
     {% block extra_css %}{% endblock %}
 </head>
 <body data-page="{% block page_id %}{% endblock %}">
+    {% if messages %}
+    <div class="message-stack" aria-live="polite" aria-relevant="additions" data-message-stack>
+        {% for message in messages %}
+        <div class="message-toast {% if message.tags %}message-{{ message.tags }}{% else %}message-info{% endif %}" role="status" data-message-toast>
+            <span class="message-icon" aria-hidden="true"></span>
+            <div class="message-content">
+                <p class="message-title">
+                    {% if "success" in message.tags %}Muvaffaqiyatli{% elif "error" in message.tags %}Xatolik{% elif "warning" in message.tags %}Diqqat{% else %}Xabar{% endif %}
+                </p>
+                <p class="message-text">{{ message }}</p>
+            </div>
+            <button class="message-close" type="button" aria-label="Xabarni yopish" data-message-close>&times;</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
     <div class="app-shell">
         {% block sidebar %}
         <aside class="sidebar" aria-label="Asosiy navigatsiya">

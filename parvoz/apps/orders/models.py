@@ -1,5 +1,3 @@
-import uuid
-
 from django.db import models
 from apps.accounts.models import User
 from apps.accounts.models import Organization
@@ -68,7 +66,11 @@ class Order(BaseModel):
     
     class OrderStatus(models.TextChoices):
         PENDING = "pending", 'Pending'
-        DONE = "done", 'Done'
+        READY = "ready", 'Ready'
+        DELIVERED = "delivered", 'Delivered'
+        CANCELLED = "cancelled", 'Cancelled'
+        PAID = "paid", "Paid"
+        
     
     
     organization = models.ForeignKey(
@@ -87,22 +89,26 @@ class Order(BaseModel):
         Table,
         related_name="orders",
         on_delete=models.CASCADE,
+        null=True,
+        blank=True,
     )
     status = models.CharField(
         choices=OrderStatus.choices,
         default=OrderStatus.PENDING,
-        max_length=11,
+        max_length=14,
         db_index=True
     )
-    order_id = models.UUIDField(
-        default=uuid.uuid4,
-        primary_key=True,
-        editable=False
+    
+    
+    @property
+    def total(self):
+        return sum(
+            item.food.price * item.quantity 
+            for item in self.order_items.all()
         )
-    total = models.PositiveBigIntegerField()
     
     def __str__(self):
-        return F"{self.order_id}# {self.status}"
+        return F"{self.id}# {self.status}"
 
     class Meta:
         indexes = [
@@ -110,7 +116,7 @@ class Order(BaseModel):
             models.Index(fields=["user","table"])
         ]
     
-class OrderItem(models.Model):
+class OrderItem(BaseModel):
     
     order = models.ForeignKey(
         Order,

@@ -1,9 +1,25 @@
 document.addEventListener("DOMContentLoaded", () => {
+    initMessages();
     setActiveNavigation();
     initTablePicker();
     initCategoryFilters();
     initOrderFilters();
 });
+
+function initMessages() {
+    const toasts = document.querySelectorAll("[data-message-toast]");
+    if (!toasts.length) return;
+
+    const closeToast = (toast) => {
+        toast.classList.add("is-leaving");
+        window.setTimeout(() => toast.remove(), 180);
+    };
+
+    toasts.forEach((toast) => {
+        toast.querySelector("[data-message-close]")?.addEventListener("click", () => closeToast(toast));
+        window.setTimeout(() => closeToast(toast), 5200);
+    });
+}
 
 function setActiveNavigation() {
     const page = document.body.dataset.page;
