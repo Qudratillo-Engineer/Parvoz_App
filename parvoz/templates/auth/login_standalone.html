@@ -269,6 +269,12 @@
                         </div>
                     {% endfor %}
                 {% endif %}
+                {% if error_log %}       
+                <div class="error-message">
+                    ❌ {{ error_log }}
+                </div>
+                {% endif %}
+                   
 
                 <!-- Login Form -->
                 <form method="POST" class="login-form">

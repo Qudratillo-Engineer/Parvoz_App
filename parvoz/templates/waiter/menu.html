@@ -11,6 +11,26 @@
     </div>
 </header>
 
+{% if not table_id %}
+<section class="walk-in-panel" aria-label="Stolsiz buyurtma">
+    <div class="walk-in-info">
+        <span class="walk-in-mark" aria-hidden="true">+</span>
+        <div>
+            <p class="walk-in-kicker">Buyurtma rejimi</p>
+            <h2 class="walk-in-title">Stolsiz buyurtma</h2>
+            <p class="walk-in-copy">Tez olib ketish yoki stol belgilanmagan holatlar uchun.</p>
+        </div>
+    </div>
+    <label class="ios-switch">
+        <input type="checkbox" id="walk-in-toggle" checked>
+        <span class="ios-switch-text">Faol</span>
+        <span class="ios-switch-track" aria-hidden="true">
+            <span class="ios-switch-thumb"></span>
+        </span>
+    </label>
+</section>
+{% endif %}
+
 <div class="pill-row">
     <button class="pill active" type="button" data-category="all">Barchasi</button>
     {% for category in categories %}
@@ -58,7 +78,7 @@
         <ul class="item-list" id="cart-list">
             <li id="table-row">
                 <span>Stol</span>
-                <strong>{{ table_id|default:"Belgilanmadi" }}</strong>
+                <strong id="cart-table-label">{{ table_id|default:"Stolsiz" }}</strong>
             </li>
             <li id="cart-empty-msg" style="color: rgba(255,255,255,0.3); font-size: 13px;">
                 Hali hech narsa qo'shilmadi
@@ -70,10 +90,10 @@
             <strong class="price" id="cart-total">0 so'm</strong>
         </div>
 
-        {% if table_id %}
         <form method="POST" action="{% url 'create_order' %}">
             {% csrf_token %}
-            <input type="hidden" name="table_id" value="{{ table_id }}">
+            <input type="hidden" name="table_id" id="table-id-input" value="{{ table_id|default:'' }}">
+            <input type="hidden" name="without_table" id="without-table-input" value="{% if table_id %}0{% else %}1{% endif %}">
             <input type="hidden" name="foods" id="foods-input" value="">
             <button 
                 class="btn btn-primary full" 
@@ -83,10 +103,8 @@
                 Buyurtma berish
             </button>
         </form>
-        {% else %}
-        <p style="font-size:12px; color:rgba(255,255,255,0.3); margin-top:14px; text-align:center;">
-            Buyurtma berish uchun avval stol tanlang
-        </p>
+        {% if not table_id %}
+        <p class="cart-hint" id="walk-in-hint">Stolsiz rejim yoqilgan</p>
         {% endif %}
     </aside>
 </div>
@@ -116,6 +134,7 @@
         const foodsInput = document.getElementById('foods-input');
         const orderBtn = document.getElementById('order-btn');
         const emptyMsg = document.getElementById('cart-empty-msg');
+        const withoutTableInput = document.getElementById('without-table-input');
 
         // Eski itemlarni o'chir (table-row ni saqla)
         list.querySelectorAll('.cart-item').forEach(el => el.remove());
@@ -169,6 +188,29 @@
                 .map(id => `${id}:${cart[id].qty}`)
                 .join(',');
         }
+
+        if (orderBtn && withoutTableInput && withoutTableInput.value !== '1' && !document.getElementById('table-id-input')?.value) {
+            orderBtn.style.opacity = '0.4';
+            orderBtn.style.pointerEvents = 'none';
+        }
+    }
+
+    const walkInToggle = document.getElementById('walk-in-toggle');
+    const withoutTableInput = document.getElementById('without-table-input');
+    const tableLabel = document.getElementById('cart-table-label');
+    const walkInHint = document.getElementById('walk-in-hint');
+    const walkInSwitchText = document.querySelector('.ios-switch-text');
+
+    if (walkInToggle && withoutTableInput) {
+        walkInToggle.addEventListener('change', function () {
+            withoutTableInput.value = this.checked ? '1' : '0';
+            if (tableLabel) tableLabel.textContent = this.checked ? 'Stolsiz' : 'Belgilanmadi';
+            if (walkInSwitchText) walkInSwitchText.textContent = this.checked ? 'Faol' : "O'chiq";
+            if (walkInHint) walkInHint.textContent = this.checked
+                ? 'Stolsiz rejim yoqilgan'
+                : 'Stol tanlang yoki tugmani qayta yoqing';
+            updateCart();
+        });
     }
 
     // Kategoriya filter

@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#11100e">
+    <meta http-equiv="refresh" content="60;url={% url 'login' %}">
+    <title>Parvoz - Ruxsat yo'q</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/parvoz.css' %}?v=20260518-1">
+</head>
+<body class="access-denied-body">
+    <main class="access-denied-shell">
+        <section class="access-denied-card" aria-labelledby="access-denied-title">
+            <div class="access-denied-mark" aria-hidden="true">!</div>
+            <p class="access-denied-kicker">Kirish cheklangan</p>
+            <h1 class="access-denied-title" id="access-denied-title">Bu sahifaga kirish uchun avval tizimga kiring</h1>
+            <p class="access-denied-copy">
+                Siz ochmoqchi bo'lgan sahifa himoyalangan. Bir daqiqadan so'ng avtomatik ravishda kirish sahifasiga o'tasiz.
+            </p>
+
+            <div class="redirect-timer" aria-live="polite">
+                <span>Yo'naltirish</span>
+                <strong><span id="redirect-countdown">60</span>s</strong>
+            </div>
+
+            <a class="btn btn-primary full access-denied-action" href="{% url 'login' %}">
+                Hozir kirish
+            </a>
+
+            {% if next_url %}
+                <p class="access-denied-next">So'ralgan sahifa: {{ next_url }}</p>
+            {% endif %}
+        </section>
+    </main>
+
+    <script>
+        const loginUrl = "{% url 'login' %}";
+        const countdown = document.getElementById('redirect-countdown');
+        let seconds = 60;
+
+        window.setInterval(() => {
+            seconds -= 1;
+            if (countdown) countdown.textContent = Math.max(seconds, 0);
+            if (seconds <= 0) {
+                window.location.href = loginUrl;
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

@@ -20,14 +20,14 @@ class WaiterDashboardView(LoginRequiredMixin,View):
             today_income += order.total
         
         
-        active_orders = orders.filter(status="pending").order_by("-created_at")
+        pending_orders = orders.filter(status="pending").order_by("-created_at")
         ready_orders = orders.filter(status="ready").order_by("-created_at")
-        
+        print(orders)
         data = {
             "orders":orders,
             "tables":tables,
             
-            "active_orders":active_orders,
+            "pending_orders":pending_orders,
             "ready_orders":ready_orders,
             "today_income":today_income,
                  

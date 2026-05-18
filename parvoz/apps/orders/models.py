@@ -116,6 +116,8 @@ class Order(BaseModel):
             models.Index(fields=["user","table"])
         ]
     
+    
+    
 class OrderItem(BaseModel):
     
     order = models.ForeignKey(

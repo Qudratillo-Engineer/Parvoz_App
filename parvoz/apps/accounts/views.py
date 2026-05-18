@@ -13,6 +13,13 @@ class RedirectView(View):
         return redirect("login")
 
 
+class AccessDeniedView(View):
+    def get(self, request):
+        return render(request, "auth/access_denied.html", {
+            "next_url": request.GET.get("next", ""),
+        })
+
+
 
 class LoginView(View):
 
@@ -56,8 +63,9 @@ class LoginView(View):
 
                 return redirect(role_redirects.get(membership.role, "login"))
 
-           
-            return render(request, "auth/login_standalone.html", context={"form":form})
+            return render(request, "auth/login_standalone.html", context={
+                "error_log":"Sizni Login va Parolingiz notug'ri !! | Siz tizimda mavjud emassiz !!",
+                "form":form})
 
 
 

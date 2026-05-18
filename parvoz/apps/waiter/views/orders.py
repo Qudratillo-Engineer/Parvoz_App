@@ -30,14 +30,18 @@ class WaiterCreateOrderView(LoginRequiredMixin,View):
         
         table_id = request.POST.get("table_id")
         food_raw = request.POST.get("foods")
-        table = get_object_or_404(Table, id=table_id)
+        without_table = request.POST.get("without_table") == "1"
+        if not without_table and not table_id:
+            messages.error(request, "Buyurtma uchun stol tanlang yoki stolsiz rejimni yoqing")
+            return redirect("waiter_menu")
+        table = None if without_table else get_object_or_404(Table, id=table_id)
         user = request.user
         membership = user.memberships.all().first()
         
-        if table.status == "occupied":
+        if table and table.status == "occupied":
             messages.error(request, "Belgilangan stol allaqachon band!")
             return redirect("waiter_menu")
-        if food_raw is None:
+        if not food_raw:
             messages.error(request, "Kamida bitta taom tanlang")
             return redirect("waiter_menu")
         if membership is None:
@@ -56,8 +60,9 @@ class WaiterCreateOrderView(LoginRequiredMixin,View):
                     organization = organization,
                     status = "pending"
                 )
-                table.status = "occupied"
-                table.save()
+                if table:
+                    table.status = "occupied"
+                    table.save()
                 for item in food_raw.split(","):
                     food_id, qty = item.split(":")
                     food = get_object_or_404(Food, id=food_id)
