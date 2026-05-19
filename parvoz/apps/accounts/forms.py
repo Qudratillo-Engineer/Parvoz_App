@@ -1,6 +1,6 @@
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 from django import forms
-from django.contrib.auth.models import User
+from apps.accounts.models import User
 
 
 class LoginForm(forms.Form):
@@ -36,7 +36,7 @@ class RegisterForm(forms.Form):
             raise forms.ValidationError("Phone number already exists")
 
         if password2 != password:
-            print(password, password2)
+           
             raise forms.ValidationError("Passwords do not match")
 
         return attrs

@@ -1,5 +1,5 @@
 from django.db import models
-from apps.accounts.models import User
+from django.conf import settings
 from apps.accounts.models import Organization
 # Create your models here.
 
@@ -80,7 +80,7 @@ class Order(BaseModel):
     )
     
     user = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         related_name="orders",
         on_delete=models.CASCADE
     )
@@ -142,7 +142,7 @@ class Notification(BaseModel):
         UNVIEWED = "unviewed", "UNVIEWED"
 
     user = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         related_name="notifications",
         on_delete=models.CASCADE
     )

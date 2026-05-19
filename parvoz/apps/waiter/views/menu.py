@@ -10,7 +10,7 @@ from apps.orders.models import Food
 class WaiterMenuView(LoginRequiredMixin,View):
     def get(self, request):
         
-        menu_items = Food.objects.all()
+        menu_items = Food.objects.filter(is_active = True)
         
         data = {
             "menu_items":menu_items

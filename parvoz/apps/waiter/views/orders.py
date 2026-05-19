@@ -49,7 +49,7 @@ class WaiterCreateOrderView(LoginRequiredMixin,View):
             return redirect("dashboard")
             
         organization = membership.organization
-        print(organization, food_raw)
+     
         
         try:
             with transaction.atomic():
@@ -89,10 +89,11 @@ class WaiterOrderCancelView(LoginRequiredMixin,View):
         if not order_id:
             messages.error(request, "Buyurtma tanlanmadi!")
             return redirect("waiter_orders")
-        print(order_id)
-        order = get_object_or_404(Order, id=order_id)
-        if not order:
-            messages.error(request, "Buyutmada xato kelib chiqdi!")
+    
+        try:
+            order = Order.objects.get(id = order_id)
+        except Order.DoesNotExist():
+            messages.error(request,"Buyurtma mavjud emas !!")
             return redirect("waiter_orders")
         
         if order.status == "delivered":
@@ -114,7 +115,7 @@ class WaiterOrderChangeStatusView(LoginRequiredMixin,View):
         
         if not order_id:
             return redirect("waiter_orders")
-        print(order_id)
+    
         order = get_object_or_404(Order, id=order_id)
         if not order:
             messages.error(request, "Buyutmada xato kelib chiqdi!")

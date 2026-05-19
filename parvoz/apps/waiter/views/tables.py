@@ -15,7 +15,6 @@ class WaiterTablesView(LoginRequiredMixin,View):
             "tables": tables
         }
         return render(request, "waiter/tables.html", context=data)
-    
-    def post():
+
+    def post(self, request):
         pass
-    

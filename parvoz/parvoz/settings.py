@@ -8,9 +8,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config("DEBUG")
+DEBUG = config("DEBUG", cast=bool) 
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["127.0.0.1"]
 
 # Application definition
 INSTALLED_APPS = [
@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'apps.accounts',
     'apps.waiter',
     'apps.orders',
+    'apps.admin_panel',
   
 ]
 
@@ -118,3 +119,5 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = "/auth/access-denied/"
+
+AUTH_USER_MODEL = "accounts.User"

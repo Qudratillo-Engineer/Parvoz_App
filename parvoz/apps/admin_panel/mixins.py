@@ -1,6 +1,6 @@
 from django.core.exceptions import PermissionDenied
 
-class WaiterRequiredMixIns:
+class AdminRequiredMixIns:
     def dispatch(self, request, *args, **kwargs):
         
         user = request.user
@@ -11,7 +11,7 @@ class WaiterRequiredMixIns:
         if user.is_active == False:
             raise PermissionDenied("You are in_active user !")
         
-        membership = user.memberships.filter(role = "waiter").first()
+        membership = user.memberships.filter(role = "admin").first()
         
         if not membership:
             raise PermissionDenied("Sizni tizimdagi bu rolingiz topilmadi !")

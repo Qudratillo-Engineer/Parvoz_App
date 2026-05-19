@@ -7,10 +7,11 @@ from apps.accounts.views import RedirectView
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('boshliq/', admin.site.urls),
     path("",RedirectView.as_view(), name="redirect"),
     #accounts
     path("auth/",include("apps.accounts.urls")),
+    path("adm/",include("apps.admin_panel.urls")),
     path("waiter/",include("apps.waiter.urls")),
     
 ]

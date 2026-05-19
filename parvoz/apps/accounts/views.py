@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
+from apps.accounts.models import User
 from django.db import transaction
 
 from .forms import LoginForm, RegisterForm
@@ -33,36 +33,37 @@ class LoginView(View):
             form = LoginForm(data = request.POST)
 
             if not form.is_valid():
-                print(request.POST.get("password"))
-                print(request.POST.get("username"))
-
-                print(form.errors)
                 return render(request, "auth/login_standalone.html", context={"form":form})
 
             username = form.cleaned_data.get('username', None)
             password = form.cleaned_data.get('password', None)
 
-            print(username, password)
-
+          
             user = authenticate(request, username=username, password=password)
-            print(user)
+           
             if user is not None:
                 login(request, user)
                 membership = OrganizationMembership.objects.filter(user=user).first()
-                Activities.objects.create(
-                    organization=membership.organization,
-                    user=user,
-                    action=f"{membership.organization}'s user {user.username} logged in !"
-                )
-                role_redirects = {
-                    "waiter": "waiter_dashboard",
-                    "admin": "admin_dashboard",
-                    "chef": "chef_dashboard",
-                    "accounter": "accounter_dashboard",
-                }
+                if membership is not None:
+                    
+                    Activities.objects.create(
+                        organization=membership.organization,
+                        user=user,
+                        action=f"{membership.organization}'s user {user.username} logged in !"
+                    )
+                    role_redirects = {
+                        "waiter": "waiter_dashboard",
+                        "admin": "admin_dashboard",
+                        "chef": "chef_dashboard",
+                        "accounter": "accounter_dashboard",
+                    }
 
-                return redirect(role_redirects.get(membership.role, "login"))
-
+                    return redirect(role_redirects.get(membership.role, "login"))
+                
+                return render(request, "auth/login_standalone.html", context={
+                    "error_log":"Sizni tizimda rolingiz mavjud emas. Iltimos ADMIN ga murojat qiling !!",
+                    "form":form})
+                
             return render(request, "auth/login_standalone.html", context={
                 "error_log":"Sizni Login va Parolingiz notug'ri !! | Siz tizimda mavjud emassiz !!",
                 "form":form})
@@ -87,11 +88,9 @@ class RegisterView(View):
         
         
         if not form.is_valid():
-            print(form.errors)
             return render(request, "auth/register_standalone.html",
                           self.get_context_data(form = form))
-        print(form.cleaned_data.get('organization_id'))
-        print(form, request.POST)
+       
         try:
             with transaction.atomic():
         
@@ -118,7 +117,6 @@ class RegisterView(View):
                 )
                 return redirect("login")
         except Organization.DoesNotExist as err:
-            print(err)
             return render(request, "auth/register_standalone.html", self.get_context_data(form = form, error_org = "Tashkilot topilmadi"))
         
 

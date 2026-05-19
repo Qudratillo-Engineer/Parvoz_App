@@ -1,28 +1,38 @@
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import F, Sum, ExpressionWrapper, IntegerField
 
-from apps.orders.models import Order, Table
+from apps.orders.models import Order, Table, OrderItem
 # Create your views here.
 from django.views import View
 
 
 class WaiterDashboardView(LoginRequiredMixin,View):
     def get(self, request):
-        today_income = 0
+        
+        today_income = OrderItem.objects.filter(
+            order__user = request.user,
+        ).aggregate(
+            total=Sum(
+                ExpressionWrapper(
+                    F("food__price") * F("quantity"),
+                    output_field=IntegerField
+                )
+            )
+        )["total"] or 0
+        
         orders = Order.objects.prefetch_related(
             "order_items__food"
-                ).filter(
-                    user=request.user
-                        ).order_by("-created_at")
-        tables = Table.objects.all()
-        
-        for order in orders:
-            today_income += order.total
-        
+            ).filter(
+            user = request.user
+        )
+        tables = Table.objects.filter(
+            is_active = True
+        )
         
         pending_orders = orders.filter(status="pending").order_by("-created_at")
         ready_orders = orders.filter(status="ready").order_by("-created_at")
-        print(orders)
+       
         data = {
             "orders":orders,
             "tables":tables,
