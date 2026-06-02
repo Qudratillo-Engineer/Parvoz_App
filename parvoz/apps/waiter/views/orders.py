@@ -71,13 +71,15 @@ class WaiterCreateOrderView(LoginRequiredMixin,WaiterRequiredMixIns,View):
                         organization=request.organization,
                     )
                 else:
-                    table = None                
+                    table = None
+                                    
                 order = Order.objects.create(
                     user = user,
                     table = table,
                     organization = request.organization,
                     status = Order.OrderStatus.PENDING
                 )
+                
                 if table:
                     table.status = "occupied"
                     table.save()
@@ -85,22 +87,26 @@ class WaiterCreateOrderView(LoginRequiredMixin,WaiterRequiredMixIns,View):
                     try:
                         food_id, qty = item.split(":")
                     except Exception as err:
+                        transaction.set_rollback(True)
                         messages.error(request, "Belgilangan ovqatlarda xato ketdi !")
                         return redirect("waiter_menu")
                     
                     try:
                         food = Food.objects.get(id=food_id, is_active=True)
                     except Food.DoesNotExist:
+                        transaction.set_rollback(True)
                         messages.error(request, "Taom topilmadi")
                         return redirect("waiter_menu")
                     
                     try:
                         qty = int(qty)
                     except ValueError:
+                        transaction.set_rollback(True)
                         messages.error(request, "Taomlar soni raqam bo'lishi kerak")
                         return redirect("waiter_menu")
 
                     if qty < 1 or qty > 15:
+                        transaction.set_rollback(True)
                         messages.error(request, "Taomlar soni 1 dan 15 gacha bo'lishi kerak")
                         return redirect("waiter_menu")
                     
@@ -112,7 +118,7 @@ class WaiterCreateOrderView(LoginRequiredMixin,WaiterRequiredMixIns,View):
                     
                 return redirect("waiter_orders")
         except Exception as err:
-            messages.error(request, f"Xatolik: {str(err)}")
+            messages.error(request, f"Xatolik chiqdi iltimos qaytadan urinib ko'ring")
             return redirect("waiter_menu")
                 
 

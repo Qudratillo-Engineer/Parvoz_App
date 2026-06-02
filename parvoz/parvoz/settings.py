@@ -78,11 +78,18 @@ MIDDLEWARE = [
 # =========================================================
 
 CACHES = {
-    'default': {},
-    'cache-for-ratelimiting': {},
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'django_cache_table', # Одно стандартное имя
+    },
+    'cache-for-ratelimiting': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'django_cache_table',
+    },
 }
+
 RATELIMIT_USE_CACHE = 'cache-for-ratelimiting'
-RATELIMIT_VIEW = "apps.accounts.views.ratelimit_error" 
+RATELIMIT_VIEW = "apps.accounts.views.ratelimit_error"
 # =========================================================
 # URLS & WSGI
 # =========================================================
@@ -118,7 +125,7 @@ TEMPLATES = [
 
 DATABASES = {
     'default': {
-        'ENGINE': config("DB_ENGINE", default="django.db.backends.sqlite3"),
+        'ENGINE': config("DB_ENGINE"),
         'NAME': config("DB_NAME"),   
         'USER': config("DB_USER"),   
         'PASSWORD': config("DB_PASSWORD"),  

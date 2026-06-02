@@ -27,10 +27,9 @@ def get_shift_start_for(dt):
     return local_dt.replace(hour=6, minute=0, second=0, microsecond=0)
 
 
-def get_shift_orders(user=None):
+def get_shift_orders(request):
     
-    membership = user.memberships.filter(role="accounter").first()
-    organization = membership.organization
+    organization = request.organization
     
     return Order.objects.prefetch_related(
         "order_items__food"
@@ -53,7 +52,7 @@ def get_paid_income(queryset):
 class CashierDashboardView(LoginRequiredMixin, CashierRequiredMixIns, View):
     def get(self, request):
         shift_start = get_shift_start()
-        orders = get_shift_orders().filter(
+        orders = get_shift_orders(request).filter(
             created_at__gte=shift_start,
         ).order_by("-created_at")
 
@@ -74,7 +73,7 @@ class CashierDashboardView(LoginRequiredMixin, CashierRequiredMixIns, View):
 class CashierPaymentsView(LoginRequiredMixin, CashierRequiredMixIns, View):
     def get(self, request):
         shift_start = get_shift_start()
-        payable_orders = get_shift_orders().filter(
+        payable_orders = get_shift_orders(request).filter(
             status=Order.OrderStatus.DELIVERED,
             created_at__gte=shift_start,
         ).order_by("created_at")
@@ -87,7 +86,7 @@ class CashierPaymentsView(LoginRequiredMixin, CashierRequiredMixIns, View):
 
 class CashierReportView(LoginRequiredMixin, CashierRequiredMixIns, View):
     def get(self, request):
-        paid_orders = list(get_shift_orders().filter(
+        paid_orders = list(get_shift_orders(request).filter(
             status=Order.OrderStatus.PAID,
         ).order_by("-updated_at"))
         shift_map = {}
@@ -161,8 +160,9 @@ class CashierOrderPaidView(LoginRequiredMixin, CashierRequiredMixIns, View):
 
 class CashierPollView(LoginRequiredMixin, CashierRequiredMixIns, View):
     def get(self, request):
-        latest_order = Order.objects.order_by("-updated_at", "-id").first()
-        delivered_count = Order.objects.filter(status=Order.OrderStatus.DELIVERED).count()
+        
+        latest_order = Order.objects.filter(organization=request.organization).order_by("-updated_at", "-id").first()
+        delivered_count = Order.objects.filter(organization=request.organization,status=Order.OrderStatus.DELIVERED).count()
         signature = f"{latest_order.updated_at.isoformat() if latest_order else 'none'}:{delivered_count}"
 
         return JsonResponse({
