@@ -1,4 +1,4 @@
-from django.core.exceptions import PermissionDenied
+from django.shortcuts import redirect
 
 class WaiterRequiredMixIns:
     def dispatch(self, request, *args, **kwargs):
@@ -6,15 +6,14 @@ class WaiterRequiredMixIns:
         user = request.user
         
         if not user.is_authenticated:
-            raise PermissionDenied("Siz tizimga kirmagansiz !")
+            return redirect("/auth/access-denied/")
         
-        if user.is_active == False:
-            raise PermissionDenied("You are in_active user !")
         
         membership = user.memberships.filter(role = "waiter").first()
-        
         if not membership:
-            raise PermissionDenied("Sizni tizimdagi bu rolingiz topilmadi !")
+            return redirect("/auth/access-denied/")
+        request.membership = membership
+        request.organization = membership.organization
         
         return super().dispatch(request, *args, **kwargs)
         

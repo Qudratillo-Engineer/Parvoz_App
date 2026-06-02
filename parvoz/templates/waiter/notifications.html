@@ -2,6 +2,7 @@
 
 {% block title %}Parvoz - Bildirishnomalar{% endblock %}
 {% block page_id %}notifications{% endblock %}
+{% block main_attrs %}data-poll-url="{% url 'waiter_poll' %}" data-poll-interval="5000"{% endblock %}
 
 {% block content %}
 <header class="page-head">
@@ -10,49 +11,27 @@
         <h1 class="page-title">Bildirishnomalar</h1>
     </div>
 </header>
-
-<section class="notice-list">
+<section class="notice-list" id="notifications-list">
     {% for notice in notifications %}
-        <article class="notice-card {% if notice.is_read %}is-read{% else %}is-unread{% endif %}">
+        <article class="notice-card {% if notice.type == 'viewed' %}is-read{% else %}is-unread{% endif %}">
             <div class="notice-top">
                 <div>
-                    <h2 class="notice-title">{{ notice.title|default:"Xabar" }}</h2>
-                    <p class="meta">{{ notice.message }}</p>
+                    <h2 class="notice-title">Bildirishnoma</h2>
+                    <p class="meta">{{ notice.text }}</p>
                 </div>
                 <span class="status">{{ notice.created_at|time:"H:i" }}</span>
             </div>
-            {% if not notice.is_read %}
+            {% if notice.type != 'viewed' %}
                 <button class="btn btn-ghost" type="button">O'qildi</button>
             {% endif %}
         </article>
     {% empty %}
-        <article class="notice-card is-unread">
+        <article class="notice-card" id="empty-notice">
             <div class="notice-top">
                 <div>
-                    <h2 class="notice-title">Stol 4 tayyor</h2>
-                    <p class="meta">Lag'mon va choy oshxonadan chiqdi. Mijozga yetkazish kerak.</p>
+                    <h2 class="notice-title">Hozircha bildirishnoma yo'q</h2>
+                    <p class="meta">Yangi xabarlar kelganda shu yerda ko'rinadi.</p>
                 </div>
-                <span class="status">14:39</span>
-            </div>
-            <button class="btn btn-ghost" type="button">O'qildi</button>
-        </article>
-        <article class="notice-card is-unread">
-            <div class="notice-top">
-                <div>
-                    <h2 class="notice-title">Yangi buyurtma</h2>
-                    <p class="meta">Stol 12 dan shashlik assorti buyurtmasi qabul qilindi.</p>
-                </div>
-                <span class="status">14:31</span>
-            </div>
-            <button class="btn btn-ghost" type="button">O'qildi</button>
-        </article>
-        <article class="notice-card is-read">
-            <div class="notice-top">
-                <div>
-                    <h2 class="notice-title">To'lov yakunlandi</h2>
-                    <p class="meta">Stol 3 uchun 236 000 so'm kassada yopildi.</p>
-                </div>
-                <span class="status">14:08</span>
             </div>
         </article>
     {% endfor %}

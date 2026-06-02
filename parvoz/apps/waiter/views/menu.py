@@ -2,12 +2,13 @@ from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 
+from apps.waiter.mixins import WaiterRequiredMixIns
 from apps.orders.models import Food
 # Create your views here.
 
 
 
-class WaiterMenuView(LoginRequiredMixin,View):
+class WaiterMenuView(LoginRequiredMixin,WaiterRequiredMixIns,View):
     def get(self, request):
         
         menu_items = Food.objects.filter(is_active = True)
@@ -19,7 +20,7 @@ class WaiterMenuView(LoginRequiredMixin,View):
     
 
 
-class WaiterMenuWithTableView(LoginRequiredMixin,View):
+class WaiterMenuWithTableView(LoginRequiredMixin,WaiterRequiredMixIns,View):
     
     def get(self, request, table_id):
         

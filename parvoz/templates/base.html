@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/parvoz.css' %}?v=20260516-3">
+    <link rel="stylesheet" href="{% static 'css/parvoz.css' %}?v=20260521-2">
     {% block extra_css %}{% endblock %}
 </head>
 <body data-page="{% block page_id %}{% endblock %}">
@@ -50,9 +50,19 @@
         </aside>
         {% endblock %}
 
-        <main class="main">
+        <main class="main" {% block main_attrs %}{% endblock %}>
             {% block content %}{% endblock %}
         </main>
+
+        {% if user.is_authenticated %}
+        <form class="logout-action" method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button class="logout-button" type="submit" aria-label="Tizimdan chiqish">
+                <span class="logout-icon" aria-hidden="true">&#10162;</span>
+                <span class="logout-text">Chiqish</span>
+            </button>
+        </form>
+        {% endif %}
 
         {% block bottom_nav %}
         <nav class="bottom-nav" aria-label="Mobil navigatsiya">
@@ -64,7 +74,126 @@
         </nav>
         {% endblock %}
     </div>
-    <script src="{% static 'js/parvoz.js' %}?v=20260512-2"></script>
+    <script src="{% static 'js/parvoz.js' %}?v=20260521-1"></script>
     {% block extra_js %}{% endblock %}
+
+    <script>
+        
+        function showWarner(text) {
+            let stack = document.getElementById("warner-toast-stack");
+            if (!stack) {
+                stack = document.createElement("div");
+                stack.id = "warner-toast-stack";
+                Object.assign(stack.style, {
+                    position: "fixed",
+                    right: "24px",
+                    bottom: "24px",
+                    zIndex: "9999",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "12px",
+                    alignItems: "flex-end",
+                    pointerEvents: "none",
+                });
+                document.body.appendChild(stack);
+            }
+
+            const div = document.createElement("div");
+            Object.assign(div.style, {
+                maxWidth: "320px",
+                width: "min(320px, calc(100vw - 48px))",
+                boxSizing: "border-box",
+                background: "#0D1526",
+                borderLeft: "4px solid #C59E3C",
+                borderRadius: "8px",
+                boxShadow: "0 4px 24px rgba(0,0,0,0.4)",
+                color: "#E8E0D0",
+                fontFamily: "Jost, sans-serif",
+                padding: "14px 16px",
+                display: "flex",
+                gap: "12px",
+                alignItems: "flex-start",
+                opacity: "0",
+                transform: "translateX(120%)",
+                transition: "opacity 280ms ease, transform 280ms ease",
+                pointerEvents: "auto",
+            });
+
+            const icon = document.createElement("span");
+            icon.textContent = "🔔";
+            icon.style.fontSize = "20px";
+            icon.style.lineHeight = "1";
+
+            const content = document.createElement("div");
+            const title = document.createElement("strong");
+            title.textContent = "Buyurtma tayyor!";
+            Object.assign(title.style, {
+                display: "block",
+                marginBottom: "4px",
+                fontSize: "15px",
+                lineHeight: "1.25",
+            });
+
+            const subtitle = document.createElement("div");
+            subtitle.textContent = text;
+            Object.assign(subtitle.style, {
+                fontSize: "14px",
+                lineHeight: "1.4",
+            });
+
+            content.append(title, subtitle);
+            div.append(icon, content);
+            stack.appendChild(div);
+
+            requestAnimationFrame(() => {
+                div.style.opacity = "1";
+                div.style.transform = "translateX(0)";
+            });
+
+            setTimeout(() => {
+                div.style.opacity = "0";
+                div.style.transform = "translateX(120%)";
+                setTimeout(() => div.remove(), 300);
+            }, 5000);
+        }
+
+        function addToNotificationsList(text) {
+            const list = document.getElementById("notifications-list");
+            if (!list) return;
+            const empty = document.getElementById("empty-notice");
+            if (empty) empty.remove();
+            const article = document.createElement("article");
+            article.className = "notice-card is-unread";
+            article.innerHTML = `
+                <div class="notice-top">
+                    <div>
+                        <h2 class="notice-title">Bildirishnoma</h2>
+                        <p class="meta">${text}</p>
+                    </div>
+                </div>`;
+            list.prepend(article);
+        }
+
+        async function checkNotifications() {
+            try {
+                const res = await fetch("/waiter/notifications/check/");
+                const data = await res.json();
+                console.log("Notifications data:", data);
+                console.log("data:", data, "soundUnlocked:", soundUnlocked);
+                if (data.count > 0) {
+                    if (soundUnlocked) sound.play();
+                    data.notifications.forEach(n => {
+                        showWarner(n.text);
+                        addToNotificationsList(n.text);
+                    });
+                }
+            } catch (e) {
+                console.log("Error:", e);
+            }
+        }
+
+        setInterval(checkNotifications, 5000);
+    </script>
+        
 </body>
 </html>

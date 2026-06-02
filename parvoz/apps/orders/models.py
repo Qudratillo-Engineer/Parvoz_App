@@ -35,7 +35,11 @@ class Table(BaseModel):
         default=TableStatus.FREE,
         max_length=10,
         db_index=True)
-    
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.CASCADE,
+        related_name="tables"
+    )
     def __str__(self):
         return f"Table {self.number} - {self.type}"
     
@@ -117,8 +121,8 @@ class Order(BaseModel):
         ]
     
     
-    
 class OrderItem(BaseModel):
+    
     
     order = models.ForeignKey(
         Order,

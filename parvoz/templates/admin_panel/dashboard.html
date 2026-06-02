@@ -2,6 +2,7 @@
 
 {% block title %}Parvoz - Admin{% endblock %}
 {% block page_id %}admin-dashboard{% endblock %}
+{% block main_attrs %}data-poll-url="{% url 'admin_poll' %}" data-poll-interval="5000"{% endblock %}
 
 {% block sidebar %}
 <aside class="sidebar" aria-label="Admin navigatsiya">
@@ -54,13 +55,7 @@
         {% for day in weekly_income %}
             <div class="bar"><span style="height: {{ day.percent|default:40 }}%"></span>{{ day.label }}</div>
         {% empty %}
-            <div class="bar"><span style="height:35%"></span>Du</div>
-            <div class="bar"><span style="height:58%"></span>Se</div>
-            <div class="bar"><span style="height:46%"></span>Cho</div>
-            <div class="bar"><span style="height:72%"></span>Pa</div>
-            <div class="bar"><span style="height:64%"></span>Ju</div>
-            <div class="bar"><span style="height:88%"></span>Sha</div>
-            <div class="bar"><span style="height:77%"></span>Yak</div>
+            <p class="meta">Hozircha haftalik daromad ma'lumoti yo'q.</p>
         {% endfor %}
     </div>
 </section>
@@ -72,11 +67,7 @@
             {% for dish in top_dishes %}
                 <li><span>{{ dish.name }}</span><strong>{{ dish.count }}</strong></li>
             {% empty %}
-                <li><span>Osh</span><strong>24</strong></li>
-                <li><span>Shashlik</span><strong>19</strong></li>
-                <li><span>Lag'mon</span><strong>15</strong></li>
-                <li><span>Salat</span><strong>12</strong></li>
-                <li><span>Choy</span><strong>10</strong></li>
+                <li><span>Hozircha sotilgan taom yo'q</span><strong>0</strong></li>
             {% endfor %}
         </ul>
     </div>
@@ -89,9 +80,7 @@
                     {% for shift in staff_shifts %}
                         <tr><td>{{ shift.name }}</td><td>{{ shift.role }}</td><td>{{ shift.time }}</td></tr>
                     {% empty %}
-                        <tr><td>Ali</td><td>Ofitsiant</td><td>09:00 - 18:00</td></tr>
-                        <tr><td>Malika</td><td>Kassir</td><td>10:00 - 19:00</td></tr>
-                        <tr><td>Jasur</td><td>Oshpaz</td><td>11:00 - 22:00</td></tr>
+                        <tr><td colspan="3">Hozircha smenadagi xodimlar yo'q.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>

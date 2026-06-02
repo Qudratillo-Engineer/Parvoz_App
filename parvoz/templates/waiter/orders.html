@@ -2,6 +2,7 @@
 
 {% block title %}Parvoz - Buyurtmalar{% endblock %}
 {% block page_id %}orders{% endblock %}
+{% block main_attrs %}data-poll-url="{% url 'waiter_poll' %}" data-poll-interval="5000"{% endblock %}
 
 {% block content %}
 <header class="page-head">
@@ -73,7 +74,7 @@
                         type="submit"
                         onclick="return confirm('Bekor qilinsinmi?')"
                         style="padding: 10px 16px; white-space:nowrap;">
-                        ✕ Bekor
+                        Bekor
                     </button>
                 </form>
 
@@ -82,22 +83,12 @@
 
         </article>
     {% empty %}
-        <article class="order-card" data-order-status="pending">
+        <article class="order-card">
             <div class="order-top">
-                <h2 class="order-title">#1024</h2>
-                <span class="status status--pending">Tayyorlanmoqda</span>
+                <h2 class="order-title">Hozircha buyurtma yo'q</h2>
+                <span class="status">Bo'sh</span>
             </div>
-            <p class="meta">Stol 7 | 14:25</p>
-            <ul class="item-list">
-                <li><span>Osh</span><strong>2x</strong></li>
-                <li><span>Achchiq-chuchuk</span><strong>1x</strong></li>
-                <li><span>Ko'k choy</span><strong>1x</strong></li>
-            </ul>
-            <div class="cart-total"><span>Jami</span><strong class="price">116 000 so'm</strong></div>
-            <div class="actions" style="margin-top:14px; display:flex; gap:8px;">
-                <button class="btn btn-primary full" type="button" style="flex:1">Yetkazildi</button>
-                <button class="btn btn-cancel" type="button" style="padding:10px 16px">✕ Bekor</button>
-            </div>
+            <p class="meta">Bugun sizda faol buyurtma qolmagan.</p>
         </article>
     {% endfor %}
 </section>

@@ -3,9 +3,10 @@ from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from apps.orders.models import Table
+from apps.waiter.mixins import WaiterRequiredMixIns
 
 
-class WaiterTablesView(LoginRequiredMixin,View):
+class WaiterTablesView(LoginRequiredMixin,WaiterRequiredMixIns,View):
     
     def get(self, request):
         

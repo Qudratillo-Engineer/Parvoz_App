@@ -1,6 +1,6 @@
 from django.shortcuts import redirect
 
-class AdminRequiredMixIns:
+class ChefRequiredMixIns:
     def dispatch(self, request, *args, **kwargs):
         
         user = request.user
@@ -9,10 +9,13 @@ class AdminRequiredMixIns:
             return redirect("/auth/access-denied/")
         
         
-        membership = user.memberships.filter(role = "admin").first()
+        membership = user.memberships.filter(role = "chef").first()
         
         if not membership:
             return redirect("/auth/access-denied/")
+        
+        request.membership = membership
+        request.organization = membership.organization
         
         return super().dispatch(request, *args, **kwargs)
         

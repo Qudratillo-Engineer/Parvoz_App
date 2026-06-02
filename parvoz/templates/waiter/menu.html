@@ -33,13 +33,9 @@
 
 <div class="pill-row">
     <button class="pill active" type="button" data-category="all">Barchasi</button>
-    {% for category in categories %}
-        <button class="pill" type="button" data-category="{{ category.slug|default:category.id }}">{{ category.name }}</button>
-    {% empty %}
-        <button class="pill" type="button" data-category="main">Issiq taomlar</button>
-        <button class="pill" type="button" data-category="drink">Ichimliklar</button>
-        <button class="pill" type="button" data-category="dessert">Shirinliklar</button>
-    {% endfor %}
+    <button class="pill active" type="button" data-category="main">Asosiy</button>
+    <button class="pill active" type="button" data-category="drink">Ichmlik</button>
+    <button class="pill active" type="button" data-category="dessert">Dessert</button>
 </div>
 
 <div class="menu-layout">
@@ -59,15 +55,12 @@
                 </button>
             </article>
         {% empty %}
-            <article class="dish-card" data-dish-category="issiq">
-                <div class="dish-top"><h2 class="dish-title">Osh</h2><span class="price">45 000 so'm</span></div>
-                <p class="meta">Qo'y go'shti, sabzi, no'xat va ziravorlar bilan.</p>
-                <button class="btn btn-primary full" type="button" onclick="addFood('1', 'Osh', 45000)">Savatchaga qo'shish</button>
-            </article>
-            <article class="dish-card" data-dish-category="ichimlik">
-                <div class="dish-top"><h2 class="dish-title">Choy</h2><span class="price">8 000 so'm</span></div>
-                <p class="meta">Ko'k yoki qora choy, limon bilan beriladi.</p>
-                <button class="btn btn-primary full" type="button" onclick="addFood('2', 'Choy', 8000)">Savatchaga qo'shish</button>
+            <article class="dish-card">
+                <div class="dish-top">
+                    <h2 class="dish-title">Hozircha taom yo'q</h2>
+                    <span class="price">0 so'm</span>
+                </div>
+                <p class="meta">Menyu qo'shilgandan keyin taomlar shu yerda ko'rinadi.</p>
             </article>
         {% endfor %}
     </section>

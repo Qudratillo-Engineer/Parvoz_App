@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Parvoz - Hisobot{% endblock %}
+{% block page_id %}cashier-report{% endblock %}
+{% block main_attrs %}data-poll-url="{% url 'cashier_poll' %}" data-poll-interval="7000"{% endblock %}
+
+{% block extra_css %}
+<style>
+    body[data-page="cashier-report"] {
+        --bg: #0f1115;
+        --panel: rgba(28, 31, 38, 0.78);
+        --gold: #e0b757;
+        --gold-soft: rgba(224, 183, 87, 0.16);
+        --line: rgba(224, 183, 87, 0.22);
+        --text: #f6efe2;
+        --muted: rgba(246, 239, 226, 0.66);
+        background:
+            linear-gradient(145deg, rgba(22, 55, 72, 0.48), transparent 40%),
+            linear-gradient(320deg, rgba(224, 183, 87, 0.12), transparent 34%),
+            #0f1115;
+    }
+
+    .report-head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .report-list {
+        display: grid;
+        gap: 12px;
+    }
+
+    .shift-card {
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background:
+            radial-gradient(circle at 92% 70%, rgba(224, 183, 87, 0.14), transparent 34%),
+            linear-gradient(145deg, var(--panel), rgba(13, 18, 26, 0.78));
+        box-shadow: var(--shadow);
+    }
+
+    .shift-top,
+    .shift-total {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .shift-title {
+        margin: 0;
+        font-family: var(--serif);
+        font-size: 27px;
+        line-height: 1;
+    }
+
+    .shift-total {
+        align-items: center;
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(246, 239, 226, 0.12);
+    }
+
+    .shift-total strong {
+        color: var(--gold);
+        font-size: 20px;
+    }
+
+    .shift-orders {
+        margin-top: 12px;
+    }
+
+    .report-empty {
+        padding: 24px;
+        border: 1px dashed rgba(224, 183, 87, 0.34);
+        border-radius: 8px;
+        color: var(--muted);
+        text-align: center;
+    }
+
+    @media (max-width: 767px) {
+        .report-head,
+        .shift-top,
+        .shift-total {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block sidebar %}
+<aside class="sidebar" aria-label="Kassir navigatsiyasi">
+    <div class="brand-block">
+        <a class="brand" href="{% url 'cashier_dashboard' %}">PARVOZ</a>
+        <span class="role-name">Kassir</span>
+    </div>
+    <nav class="side-nav">
+        <a class="nav-item" data-nav="cashier-dashboard" href="{% url 'cashier_dashboard' %}"><span class="nav-mark">&#8962;</span><span>Kassa</span></a>
+        <a class="nav-item" data-nav="cashier-payments" href="{% url 'cashier_payments' %}"><span class="nav-mark">&#10003;</span><span>To'lov</span></a>
+        <a class="nav-item active" data-nav="cashier-report" href="{% url 'cashier_report' %}"><span class="nav-mark">&#9635;</span><span>Hisobot</span></a>
+    </nav>
+    <div class="sidebar-user">
+        <span class="user-name">{{ user.first_name|default:user.username|default:"Kassir" }}</span>
+        <span class="user-role">Kassir</span>
+    </div>
+</aside>
+{% endblock %}
+
+{% block bottom_nav %}
+<nav class="bottom-nav" aria-label="Kassir mobil navigatsiyasi">
+    <a class="bottom-link" data-nav="cashier-dashboard" href="{% url 'cashier_dashboard' %}"><span>&#8962;</span><small>Kassa</small></a>
+    <a class="bottom-link" data-nav="cashier-payments" href="{% url 'cashier_payments' %}"><span>&#10003;</span><small>To'lov</small></a>
+    <a class="bottom-link active" data-nav="cashier-report" href="{% url 'cashier_report' %}"><span>&#9635;</span><small>His</small></a>
+</nav>
+{% endblock %}
+
+{% block content %}
+<header class="report-head">
+    <div>
+        <p class="eyebrow">Kassir paneli</p>
+        <h1 class="page-title">Hisobot</h1>
+        <p class="page-note">Har bir smena bo'yicha barcha tushumlar.</p>
+    </div>
+</header>
+
+<section class="grid stats-grid">
+    <article class="stat-card">
+        <p class="stat-label">Jami tushum</p>
+        <div class="stat-value">{{ total_income|default:0 }}</div>
+        <div class="stat-sub">so'm</div>
+    </article>
+    <article class="stat-card">
+        <p class="stat-label">To'langan buyurtmalar</p>
+        <div class="stat-value">{{ total_orders|default:0 }}</div>
+        <div class="stat-sub">barcha smenalar</div>
+    </article>
+    <article class="stat-card">
+        <p class="stat-label">Smenalar</p>
+        <div class="stat-value">{{ shifts|length }}</div>
+        <div class="stat-sub">hisobotda</div>
+    </article>
+</section>
+
+<section class="report-list" aria-label="Smena tushumlari">
+    {% for shift in shifts %}
+    <article class="shift-card">
+        <div class="shift-top">
+            <div>
+                <h2 class="shift-title">{{ shift.shift_start|date:"d.m.Y" }}</h2>
+                <p class="meta">{{ shift.shift_start|time:"H:i" }} - {{ shift.shift_end|time:"H:i" }}</p>
+            </div>
+            <span class="status">{{ shift.orders_count }} ta buyurtma</span>
+        </div>
+
+        <ul class="item-list shift-orders">
+            {% for order in shift.orders|slice:":8" %}
+            <li>
+                <span>#{{ order.id }} {% if order.table %}Stol {{ order.table.number }}{% else %}Stolsiz{% endif %}</span>
+                <strong>{{ order.total|default:0 }}</strong>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <div class="shift-total">
+            <span>Smena tushumi</span>
+            <strong>{{ shift.income|default:0 }} so'm</strong>
+        </div>
+    </article>
+    {% empty %}
+    <div class="report-empty">
+        <h2 class="section-title">Hisobot hozircha bo'sh</h2>
+        <p class="meta">To'langan buyurtmalar paydo bo'lganda smena tushumlari shu yerda ko'rinadi.</p>
+    </div>
+    {% endfor %}
+</section>
+{% endblock %}

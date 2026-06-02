@@ -240,6 +240,62 @@ input, select, textarea { min-height: 48px; }
 .bottom-link small { font-size: 11px; letter-spacing: 0; }
 .bottom-link.active { color: var(--gold); background: var(--gold-soft); }
 
+.logout-action {
+    position: fixed;
+    right: 14px;
+    bottom: calc(74px + env(safe-area-inset-bottom));
+    z-index: 60;
+    margin: 0;
+}
+
+.logout-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 46px;
+    padding: 10px 14px;
+    border: 1px solid rgba(229, 111, 101, 0.42);
+    border-radius: 999px;
+    background:
+        linear-gradient(145deg, rgba(229, 111, 101, 0.22), rgba(18, 36, 59, 0.76)),
+        rgba(17, 16, 14, 0.9);
+    color: #ffd8d4;
+    cursor: pointer;
+    font-weight: 800;
+    line-height: 1;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.34);
+    backdrop-filter: blur(18px);
+    transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.logout-button:hover,
+.logout-button:focus-visible {
+    border-color: rgba(229, 111, 101, 0.72);
+    background:
+        linear-gradient(145deg, rgba(229, 111, 101, 0.32), rgba(18, 36, 59, 0.82)),
+        rgba(17, 16, 14, 0.96);
+    outline: none;
+    transform: translateY(-1px);
+}
+
+.logout-icon {
+    display: grid;
+    width: 26px;
+    min-width: 26px;
+    height: 26px;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(229, 111, 101, 0.18);
+    font-size: 15px;
+    line-height: 1;
+}
+
+.logout-text {
+    font-size: 13px;
+    letter-spacing: 0;
+}
+
 .brand {
     font-family: var(--serif);
     font-size: 31px;
@@ -884,6 +940,7 @@ input, select, textarea { min-height: 48px; }
     .sidebar-user { display: grid; gap: 2px; padding-top: 16px; border-top: 1px solid var(--line); }
     .user-name { font-weight: 600; }
     .bottom-nav { display: none; }
+    .logout-action { top: 18px; right: 22px; bottom: auto; }
     .main { padding: 28px; }
     .stats-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .admin-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }

@@ -2,6 +2,7 @@
 
 {% block title %}Parvoz - Stollar{% endblock %}
 {% block page_id %}tables{% endblock %}
+{% block main_attrs %}data-poll-url="{% url 'waiter_poll' %}" data-poll-interval="5000"{% endblock %}
 
 {% block content %}
 <header class="page-head">
@@ -22,16 +23,13 @@
             <a class="btn btn-ghost full" href="{% url 'waiter_menu_table' table.pk %}">Menyu ochish</a>
         </article>
     {% empty %}
-        {% for item in "xxxxxxxxxxxxxxxxxxxx" %}
-            <article class="table-card" data-table-status="free">
-                <div class="table-card-top">
-                    <h2 class="table-number">Stol {{ forloop.counter }}</h2>
-                    <span class="status">Bo'sh</span>
-                </div>
-                <p class="meta">Buyurtmalar soni: 0</p>
-                <a class="btn btn-ghost full" href="{% url 'waiter_menu' %}">Menyu ochish</a>
-            </article>
-        {% endfor %}
+        <article class="table-card">
+            <div class="table-card-top">
+                <h2 class="table-number">Hozircha stol yo'q</h2>
+                <span class="status">Bo'sh</span>
+            </div>
+            <p class="meta">Stollar qo'shilgandan keyin shu sahifada ko'rinadi.</p>
+        </article>
     {% endfor %}
 </section>
 {% endblock %}

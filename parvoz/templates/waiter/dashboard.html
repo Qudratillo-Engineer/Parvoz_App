@@ -2,6 +2,7 @@
 
 {% block title %}Parvoz - Ofitsiant{% endblock %}
 {% block page_id %}dashboard{% endblock %}
+{% block main_attrs %}data-poll-url="{% url 'waiter_poll' %}" data-poll-interval="5000"{% endblock %}
 
 {% block content %}
 <header class="page-head">
@@ -15,17 +16,17 @@
 <section class="grid stats-grid">
     <article class="stat-card">
         <p class="stat-label">Faol buyurtmalar</p>
-        <div class="stat-value">{% if active_orders %}{{ active_orders|length }}{% else %}6{% endif %}</div>
+        <div class="stat-value">{{ active_orders_count|default:0 }}</div>
         <div class="stat-sub">Hozir ishlanmoqda</div>
     </article>
     <article class="stat-card">
         <p class="stat-label">Tayyor buyurtmalar</p>
-        <div class="stat-value">{% if ready_orders %}{{ ready_orders|length }}{% else %}3{% endif %}</div>
+        <div class="stat-value">{{ ready_orders_count|default:0 }}</div>
         <div class="stat-sub">Yetkazish kutilmoqda</div>
     </article>
     <article class="stat-card">
         <p class="stat-label">Bugungi daromad</p>
-        <div class="stat-value">{{ today_income|default:"1 840 000" }}</div>
+        <div class="stat-value">{{ today_income|default:0 }}</div>
         <div class="stat-sub">so'm</div>
     </article>
 </section>
@@ -53,12 +54,14 @@
                 </small>
             </a>
         {% empty %}
-            {% for item in "xxxxxxxxxxxxxxxxxxxx" %}
-                <button class="table-btn is-free" type="button" data-table="{{ forloop.counter }}">
-                    <strong>{{ forloop.counter }}</strong>
-                    <small>Bo'sh</small>
-                </button>
-            {% endfor %}
+            <article class="notice-card" style="width:270px;">
+                <div class="notice-top">
+                    <div>
+                        <h2 class="notice-title">Hozircha stol yo'q</h2>
+                        <p class="meta">Stollar qo'shilgandan keyin shu yerda ko'rinadi.</p>
+                    </div>
+                </div>
+            </article>
         {% endfor %}
     </div>
     <div class="form-row" style="margin-top:14px">
@@ -84,7 +87,7 @@
                     {% for item in order.order_items.all %}
                        <li><span>{{ item.food.name|default:"None" }}</span><strong>{{ item.quantity }}x</strong></li>
                     {% empty %}
-                        <li><span>Taomlar backend orqali keladi</span><strong>-</strong></li>
+                        <li><span>Taomlar ro'yxati</span><strong>-</strong></li>
                     {% endfor %}
                 </ul>
                 <div class="actions">
@@ -101,39 +104,12 @@
                 </div>
             </article>
         {% empty %}
-            <article class="order-card" data-order-status="pending">
+            <article class="order-card">
                 <div class="order-top">
-                    <h3 class="order-title">Buyurtma #1024</h3>
-                    <span class="status">Tayyorlanmoqda</span>
+                    <h3 class="order-title">Hozircha buyurtma yo'q</h3>
+                    <span class="status">Bo'sh</span>
                 </div>
-                <p class="meta">Stol 7 | 14:25</p>
-                <ul class="item-list">
-                    <li><span>Osh</span><strong>2x</strong></li>
-                    <li><span>Achchiq-chuchuk</span><strong>1x</strong></li>
-                    <li><span>Ko'k choy</span><strong>1x</strong></li>
-                </ul>
-                <div class="cart-total"><span>Jami</span><strong class="price">116 000 so'm</strong></div>
-                <div class="actions" style="margin-top:14px">
-                    <a class="btn btn-ghost" href="{% url 'waiter_orders' %}">Ko'rish</a>
-                    <button class="btn btn-primary" type="button">Tayyor</button>
-                </div>
-            </article>
-            <article class="order-card" data-order-status="new">
-                <div class="order-top">
-                    <h3 class="order-title">Buyurtma #1025</h3>
-                    <span class="status">Yangi</span>
-                </div>
-                <p class="meta">Stol 12 | 14:31</p>
-                <ul class="item-list">
-                    <li><span>Shashlik</span><strong>4x</strong></li>
-                    <li><span>Non</span><strong>2x</strong></li>
-                    <li><span>Fanta</span><strong>2x</strong></li>
-                </ul>
-                <div class="cart-total"><span>Jami</span><strong class="price">188 000 so'm</strong></div>
-                <div class="actions" style="margin-top:14px">
-                    <a class="btn btn-ghost" href="{% url 'waiter_orders' %}">Ko'rish</a>
-                    <button class="btn btn-primary" type="button">Tayyor</button>
-                </div>
+                <p class="meta">Yangi buyurtmalar tushganda shu yerda ko'rinadi.</p>
             </article>
         {% endfor %}
     </div>

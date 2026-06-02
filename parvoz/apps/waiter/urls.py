@@ -1,11 +1,14 @@
 from django.urls import path
+from rest_framework.routers import DefaultRouter
+
 from apps.waiter.views.tables import WaiterTablesView
 from apps.waiter.views.dashboard import WaiterDashboardView
 from apps.waiter.views.orders import WaiterOrdersView, WaiterCreateOrderView, WaiterOrderChangeStatusView, WaiterOrderCancelView
 from apps.waiter.views.menu import WaiterMenuView, WaiterMenuWithTableView
-from apps.waiter.views.notifications import WaiterNotificationsView
+from apps.waiter.views.notifications import WaiterNotificationsView, WaiterNotificationsCheckView, WaiterPollView
 
 urlpatterns = [
+    
     
     path("dashboard/", WaiterDashboardView.as_view(), name="waiter_dashboard"),
     
@@ -18,7 +21,10 @@ urlpatterns = [
     path("menu/table/<int:table_id>", WaiterMenuWithTableView.as_view(), name="waiter_menu_table"),
     
     path("notifications/", WaiterNotificationsView.as_view(), name="waiter_notifications"),
+    path("notifications/check/", WaiterNotificationsCheckView.as_view(), name="waiter_notifications_check"),
+    path("poll/", WaiterPollView.as_view(), name="waiter_poll"),
     
     path("tables/", WaiterTablesView.as_view(), name="waiter_tables"),
     
 ]
+
