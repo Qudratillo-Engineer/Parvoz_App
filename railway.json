@@ -3,6 +3,6 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "cd parvoz && python manage.py migrate && python manage.py createcachetable django_cache_table && gunicorn parvoz.wsgi:application --bind 0.0.0.0:$PORT"
+    "startCommand": "/bin/sh -c 'python manage.py migrate && python manage.py createcachetable django_cache_table && gunicorn parvoz.wsgi:application --bind 0.0.0.0:$PORT'"
   }
 }
