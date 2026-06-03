@@ -31,20 +31,20 @@ ALLOWED_HOSTS = config(
 # =========================================================
 
 DJANGO_APPS = [
+    "jazzmin",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-]
-
-THIRD_PARTY_APPS = [
-    "jazzmin",
-    "debug_toolbar",
-    "drf_spectacular",
     "rest_framework",
 ]
+
+if DEBUG:
+    DJANGO_APPS.append("debug_toolbar")
+    DJANGO_APPS.append("drf_spectacular")
+
 
 LOCAL_APPS = [
     "apps.accounts",
@@ -55,24 +55,28 @@ LOCAL_APPS = [
     "apps.cashier",
 ]
 
-INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+
+INSTALLED_APPS = DJANGO_APPS  + LOCAL_APPS
 
 
 # =========================================================
 # MIDDLEWARE
 # =========================================================
 
+
 MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
+    "django.middleware.security.SecurityMiddleware",   
+    "whitenoise.middleware.WhiteNoiseMiddleware", 
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    # "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+if DEBUG:
+    MIDDLEWARE.append("debug_toolbar.middleware.DebugToolbarMiddleware")
 # =========================================================
 # CACHES
 # =========================================================
@@ -125,12 +129,12 @@ TEMPLATES = [
 
 DATABASES = {
     'default': {
-        'ENGINE': config("DB_ENGINE"),
-        'NAME': config("DB_NAME"),   
-        'USER': config("DB_USER"),   
-        'PASSWORD': config("DB_PASSWORD"),  
-        'HOST': config("DB_HOST", default="127.0.0.1"),
-        'PORT': config("DB_PORT")
+        'ENGINE': config("ENGINE", default="django.db.backends.postgresql"),
+        'NAME': config("PGDATABASE", default=config("DB_NAME", default="")),
+        'USER': config("PGUSER", default=config("DB_USER", default="")),
+        'PASSWORD': config("PGPASSWORD", default=config("DB_PASSWORD", default="")),
+        'HOST': config("PGHOST", default=config("DB_HOST", default="127.0.0.1")),
+        'PORT': config("PGPORT", default=config("DB_PORT", default="5432")),
     }
 }
 
@@ -179,6 +183,8 @@ STATIC_ROOT = BASE_DIR / "static"
 STATICFILES_DIRS = [
     BASE_DIR / "staticfiles",
 ]
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 MEDIA_URL = "/media/"
 
